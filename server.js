@@ -51,7 +51,7 @@ app.listen(8888, function () {
   console.log('Fired at ' + Date());
 });
 
-server.listen(3002)
+server.listen(3001)
 
 var connectedUsers = []
 
