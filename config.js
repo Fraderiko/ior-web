@@ -10,5 +10,5 @@ module.exports = {
     adminPassword: '2007200788',
     sms_login: 'Fraderiko',
     sms_password: 'A18101989a'
+	
 }
-
