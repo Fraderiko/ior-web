@@ -9,6 +9,5 @@ module.exports = {
     mail_password: 'A18101989a',
     adminPassword: '2007200788',
     sms_login: 'Fraderiko',
-    sms_password: 'A18101989a'	
-	
+    sms_password: 'A18101989a'		
 }
