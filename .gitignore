@@ -1,5 +1,9 @@
 uploads/
 node_modules/
 mongo/
+public/
+
 
 config.js
+
+*.svg
