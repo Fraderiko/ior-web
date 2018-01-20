@@ -11,3 +11,4 @@ module.exports = {
     sms_login: 'Fraderiko',
     sms_password: 'A18101989a'
 }
+
