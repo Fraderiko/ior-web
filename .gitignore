@@ -2,4 +2,4 @@ uploads/
 node_modules/
 mongo/
 
-/config.js
+!/config.js
