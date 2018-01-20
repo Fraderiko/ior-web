@@ -1,5 +1,5 @@
 module.exports = {
-    host: "http://188.225.47.101:8888",
+    host: "http://188.225.47.101:8080",
     base_url: "http://188.225.47.101",
     // host: "http://localhost:3000",
     // base_url: "",
