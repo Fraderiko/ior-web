@@ -45,7 +45,7 @@ mongoose.connect(mongoDB, {
   useMongoClient: true
 });
 
-app.listen(8888, function () {
+app.listen(80, function () {
   cronjobs.archiveOrders()
   resolveAdminAccount()
   console.log('Fired at ' + Date());

@@ -1558,9 +1558,9 @@ var OrdersRow = createReactClass({
   },
   resolveTime: function (date) {
     var date = date / 1000
-    if (moment().date() === moment.unix(date).date()) {
+    if (moment().date() === moment.unix(date).date() && moment().month() === moment.unix(date).month()) {
       return "Сегодня, " + moment.unix(date).locale("ru").format("HH:mm")
-    } else if (moment().date() === moment.unix(date).add(1, 'day').date()) {
+    } else if (moment().date() === moment.unix(date).add(1, 'day').date() && moment().month() === moment.unix(date).month()) {
       return "Вчера, " + moment.unix(date).locale("ru").format("HH:mm")
     } else {
       return moment.unix(date).locale("ru").format("LLL")
