@@ -39,7 +39,7 @@ app.use(require('./routes/order.js'));
 app.use(express.static('public'));
 app.use("/uploads", express.static(__dirname + '/uploads'));
 
-var mongoDB = 'mongodb://localhost/ior';
+var mongoDB = 'mongodb://root:2007200788@localhost/ior';
 
 mongoose.connect(mongoDB, {
   useMongoClient: true
