@@ -12,6 +12,8 @@ var app = express();
 var server = http.Server(app);
 var websocket = socket(server)
 
+var api = require('./api')
+
 var MailService = require('./mail-service');
 
 var Order = require('./model/order.js');
@@ -87,50 +89,15 @@ websocket.on('connection', function (connection) {
     connectedUsers.push({ connectionID: connection.id, userID: _id })
   })
 
-  connection.on('message', function (data) {
-    console.log(data);
+  connection.on('messageString', function (data) {
+    data = JSON.parse(data)
     websocket.emit(data.order, data)
-    Order.findOne({ _id: data.order }, function (err, order) {
-      var now = new Date().getTime()
-      data.date = now
-      var messages = order.messages
-      messages.push(data)
-      order.messages = messages
-      order.updated = now
-      order.save(function (err) {
-        if (err) throw err
-      })
+    processChatMessage(data)
+  })
 
-      var userOnline = false
-
-      if (data.username == order.client) {
-        connectedUsers.forEach(function (item, index) {
-          if (item.userID == order.assignedTo) {
-            userOnline = true
-          }
-        })
-
-        if (userOnline == false) {
-          User.find({ _id: order.assignedTo }, function (err, user) {
-            sendNewChatMail(user, order.number)
-          })
-        }
-      }
-
-      if (data.username == order.assignedTo) {
-        connectedUsers.forEach(function (item, index) {
-          if (item.userID == order.client) {
-            userOnline = true
-          }
-        })
-
-        if (userOnline == false) {
-          User.find({ _id: order.client }, function (err, user) {
-            sendNewChatMail(user, order.number)
-          })
-        }
-      }
-    })
+  connection.on('message', function (data) {
+    websocket.emit(data.order, data)
+    processChatMessage(data)
   });
 
   connection.on('disconnect', function () {
@@ -146,6 +113,71 @@ websocket.on('connection', function (connection) {
 
   })
 })
+
+function processChatMessage(data) {
+  Order.findOne({ _id: data.order }, function (err, order) {
+    var now = new Date().getTime()
+    data.date = now
+    var messages = order.messages
+    messages.push(data)
+    order.messages = messages
+    order.updated = now
+    order.save(function (err) {
+      if (err) throw err
+    })
+
+    var userOnline = false
+
+    if (data.username == order.client) {
+      connectedUsers.forEach(function (item, index) {
+        if (item.userID == order.assignedTo) {
+          userOnline = true
+        }
+      })
+
+      if (userOnline == false) {
+        User.find({ _id: order.assignedTo }, function (err, user) {
+          sendNewChatMail(user, order.number)
+        })
+      }
+    }
+
+    if (data.username == order.assignedTo) {
+      connectedUsers.forEach(function (item, index) {
+        if (item.userID == order.client) {
+          userOnline = true
+        }
+      })
+
+      if (userOnline == false) {
+        User.find({ _id: order.client }, function (err, user) {
+          sendNewChatMail(user, order.number)
+        })
+      }
+    }
+
+    if (order.client == data.username) {
+      User.findOne({ _id: order.assignedTo }, function (err, user) {
+        console.log("user is ", user)
+        if (user.push_id != "") {
+          console.log("Chat message push sent")
+          api.postPushWithData(user.push_id, "Новое сообщение по заказу " + order.number, data.order)
+        }
+      })
+    }
+
+    if (order.assignedTo == data.username) {
+      User.findOne({ _id: order.client }, function (err, user) {
+        console.log("user is ", user)
+        if (user.push_id != "") {
+          console.log("Chat message push sent")
+          api.postPushWithData(user.push_id, "Новое сообщение по заказу " + order.number, data.order)
+        }
+      })
+    }
+
+  })
+}
 
 
 function sendNewChatMail(user, order) {
