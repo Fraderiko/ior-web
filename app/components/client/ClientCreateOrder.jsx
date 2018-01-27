@@ -113,7 +113,7 @@ var ClientCreateOrder = createReactClass({
     })
   },
   submitHandler: function (e) {
-    e.preventDefault;
+    // e.preventDefault;
 
     if (this.state.number == undefined || this.state.number == "" || this.state.ordertype == "" || this.state.assignedTo == "") {
       if (this.state.number == undefined || this.state.number == "") {
@@ -306,7 +306,7 @@ var ClientCreateOrder = createReactClass({
             <label>Комментарий</label>
             <textarea className="form-control" id="comment" value={this.state.comment} onChange={this.handleCommentChange} placeholder="Если необходимо"></textarea>
           </div>
-          <button type="submit" className="btn btn-primary" >Создать</button>
+          <button onClick={this.submitHandler} className="btn btn-primary" >Создать</button>
         </form>
         <Alert stack={{ limit: 3 }} />
       </div>
