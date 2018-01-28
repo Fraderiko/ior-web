@@ -23,7 +23,7 @@ var ClientInterfaceNav = createReactClass({
         <nav className="navbar navbar-default">
           <div className="container-fluid">
             <div className="navbar-header">
-              <a className="navbar-brand" href="#">IOR</a>
+              <a className="navbar-brand" href="http://live.iorcontrol.ru/">IOR</a>
             </div>
             <ul className="nav navbar-nav">
               <li><Link to="/">Список заказов</Link></li>

@@ -85,7 +85,7 @@ var Profile = createReactClass({
   shouldShowNewOrdersAlert: function() {
     if (this.state.type == 'employee') {
       return (<div key={'shouldShowNewOrdersAlert'} className="checkbox">
-            <label><input value={this.state.newOrdersNotifications} onChange={this.handleNewOrdersNotifications} checked={this.state.newOrdersNotifications} type="checkbox"></input>Присылать уведомления о новых заказах</label>
+            <label><input value={this.state.newOrdersNotifications} onChange={this.handleNewOrdersNotifications} checked={this.state.newOrdersNotifications} type="checkbox"></input>Присылать почтовые уведомления о новых заказах</label>
           </div>)
     }
   },
@@ -93,15 +93,15 @@ var Profile = createReactClass({
     if (this.state.type == 'client') {
       return (
         <div key={'shouldShowNewStatusesAlert'} className="checkbox">
-            <label><input value={this.state.newStatusesNotifications} onChange={this.handleNewStatusesNotifications} checked={this.state.newStatusesNotifications} type="checkbox"></input>Присылать уведомления о изменениях статусов</label>
+            <label><input value={this.state.newStatusesNotifications} onChange={this.handleNewStatusesNotifications} checked={this.state.newStatusesNotifications} type="checkbox"></input>Присылать почтовые уведомления о новых статусах</label>
           </div>
       )
     }
   },
   render: function () {
     return (
-      <div className="well">
-        <h1>Профиль</h1>
+      <div className="well as-mt-30">
+        <h1 className="hide">Профиль</h1>
         <form onSubmit={this.submitHandler}>
           <div className="form-group">
             <label>ФИО</label>

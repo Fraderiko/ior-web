@@ -43,7 +43,7 @@ app.post('/users/create', function (req, res) {
         from: '"IORcontrol" <support@iorcontrol.ru>',
         to: req.body.mail, 
         subject: 'Регистрация в IORcontrol', 
-        html: '<p>Здравствуйте,</p><p>Вы были зарегистрированы в системе IORcontrol</p><p>Ваш логин: <b>'+ req.body.mail +'</b></p><p>Ваш пароль: <b>'+ req.body.password + '</b></p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://online.iorcontrol.ru">http://online.iorcontrol.ru</a></p>' 
+        html: '<p>Здравствуйте,</p><p>Вы были зарегистрированы в системе IORcontrol.</p><p>Ваш логин: <b>'+ req.body.mail +'</b></p><p>Ваш пароль: <b>'+ req.body.password + '</b></p></p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://online.iorcontrol.ru">live.iorcontrol.ru</a></p>' 
     };
 
     mail_service.sendMail(mailOptions)
