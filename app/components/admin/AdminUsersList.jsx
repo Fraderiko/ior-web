@@ -125,7 +125,7 @@ var AdminUsersList = createReactClass({
         <div className="row">
 
         <div className="well col-lg-8">
-            <h1>Пользователи</h1>
+            <h1 className="hide">Пользователи</h1>
             <div className="padding-top-20">
                 <button type="button" onClick={this.createUser} className="btn  btn-success">Создать пользователя</button>
             </div>

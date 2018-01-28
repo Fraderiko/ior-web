@@ -61,7 +61,7 @@ var AdminOrdersList = createReactClass({
         <div className="row">
 
         <div className="well col-lg-8">
-            <h1>Типы заказов</h1>
+            <h1 className="hide">Типы заказов</h1>
             <div className="padding-top-20">
                 <button type="button" onClick={this.createOrder} className="btn  btn-success">Создать тип заказа</button>
             </div>

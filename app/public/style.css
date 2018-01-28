@@ -14,6 +14,7 @@ body {
   max-width: 300px;
   float: left;
   clear: both;
+  border: 1px solid #dedede;
 }
 
 .discussionMessageDate {
@@ -34,11 +35,18 @@ body {
   list-style-type: none;
   padding: 0;
   margin: 0 0 5px 0;
+  overflow: hidden;
 }
 
 .right {
   float: right;
   clear: both;
+}
+
+.right .discussionMessage {
+  background: rgb(6, 152, 243);
+  border: 1px solid #0698f3;
+  color: #fff;
 }
 
 .chat {
@@ -439,4 +447,216 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     -webkit-transform: scale(1);
             transform: scale(1);
   }
+}
+
+
+
+
+.well.as {
+  padding: 0!important;
+  border-radius: 0;
+  border: 1px solid #ded9d9;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+}
+
+.form-control {
+  border-radius: 0 !important;
+
+}
+
+.btn {
+ border-radius: 0px !important;
+}
+
+.as-login.btn {
+  display: block !important;
+  width: 100% !important;
+  height: 50px !important;
+  border-radius: 0px !important;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+}
+
+.as-auth-box {
+  display: block;
+  overflow: hidden;
+}
+
+.as-auth-box--btn {
+  width: 50% !important;
+  float: left;
+  display: block;
+  border-right: 1px solid #ccc;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+}
+
+.as-auth-box--btn:last-child {
+  border-right: none;
+  background: #e2e2e2;
+  border-bottom: 1px solid #cccccc;
+}
+
+.as-auth-box--btn a {
+  text-decoration: none;
+  display: block;
+  color: #333 !important;
+}
+
+.as-login-form {
+  padding: 28px;
+}
+
+.as-login-link {
+  margin: 20px 0 0 0;
+  display: inline-block;
+}
+
+
+
+.well {
+  min-height: 20px;
+  /* padding: 0; */
+  margin-bottom: 20px;
+  border: 1px solid #e3e3e3;
+  border-radius: 0px !important;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .05);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+  background: #f8f8f8;
+}
+
+.table > thead > tr > th {
+  border-bottom: none;
+}
+
+table {
+  background: #e4e4e4;
+  margin-bottom: 0px !important;
+}
+
+table thead tr {
+  background: #e4e4e4;
+}
+
+table tbody {
+
+}
+
+table .btn {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  float: right;
+}
+
+table tr {
+  cursor: pointer;
+  background: #eee;
+}
+
+
+/*******************************/
+.col-lg-4 .well {
+  padding: 24px 24px 8px;
+}
+.col-lg-4 {
+  padding: 0;
+}
+
+.well.as-mt-30 {
+  margin-top: 30px !important;
+}
+.center {
+  text-align: center;
+}
+.no-padding {
+  padding: 0;
+}
+/*******************************/
+
+.navbar-nav > li > a {
+  line-height: 34px !important;
+}
+
+.navbar-brand {
+  line-height: 34px !important;
+  font-weight: 700;
+  color: #000 !important;
+}
+
+.navbar-default {
+  background-color: #f8f8f8 !important;
+  border: none !important;
+  margin: -30px -30px 15px !important;
+  padding: 0 22px !important;
+  box-shadow: 0 4px 5px rgba(74, 74, 74, 0.21) !important;
+
+}
+
+.navbar-default .navbar-nav > li > a {
+  color: #2375b5 !important;
+  font-size: 16px !important;
+}
+
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+  background-color: transparent;
+  border-bottom: 3px solid #75adf1;
+  margin: 0 0 -3px;
+}
+
+
+/******************************/
+.filezone {
+  height: 40px !important;
+  line-height: 36px !important;
+  border: 2px dashed #0698f3 !important;
+  padding: 0 16px !important;
+  background: #fff !important;
+}
+
+.chatroom {
+  width: 100% !important;
+  height: auto;
+  background-color: rgba(228, 228, 228, 0.7);
+  border-radius: 0px !important;
+  overflow: hidden;
+  border: 1px solid #e3e3e3 !important;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+}
+
+.chatroom h3 {
+  background-color: rgba(255, 255, 255, 0.7) !important;
+  color: #888 !important;
+  margin: 0;
+  height: 40px;
+  font-size: 18px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatroom .input {
+  padding: 0 8px;
+  height: 50px !important;
+  width: 100%;
+  background: rgb(249, 249, 249) !important;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.as-img-ch {
+  margin: 0 4px 0 15px;
+}
+.as-img-ch2 {
+  margin: 0 10px 0;
+}
+
+.discussionMessageContainer {
+  border-bottom: 1px dashed #d4d2d2;
+}
+
+.discussionMessageContainer:last-child {
+  border-bottom: none;
 }

@@ -29,7 +29,7 @@ var AdminInterfaceNav = createReactClass({
               <li><Link to="/">Заказы</Link></li>
               <li><Link to="/groups">Группы</Link></li>
               <li><Link to="/users">Пользователи</Link></li>
-              <li><Link to="/orders">Заказы</Link></li>
+              <li><Link to="/orders">Типы заказов</Link></li>
               <li><Link to="/statuses">Статусы</Link></li>
               <li><Link to="/fields">Поля</Link></li>
             </ul>

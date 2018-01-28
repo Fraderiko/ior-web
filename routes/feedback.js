@@ -12,9 +12,9 @@ var mail_service = require('../mail-service.js');
 app.post('/feedback/', function (req, res) {
     
     var mailOptions = {
-        from: '"IOR Support 👻" <support@iorcontrol.ru>', 
+        from: '"IOR Support" <support@iorcontrol.ru>', 
         to: 'support@iorcontrol.ru', 
-        subject: 'Вам поступило сообщение по обратной связи', 
+        subject: 'Обратная связь от IORcontrol', 
         html: '<p>Отправитель: '+ req.body.sender +'</p><p>' + req.body.message + '</p>' 
     };
 

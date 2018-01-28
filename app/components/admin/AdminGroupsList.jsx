@@ -196,7 +196,7 @@ var AdminGroupsList = createReactClass({
         <div className="row">
           
         <div className="well col-lg-8">
-            <h1>Группы</h1>
+            <h1 className="hide">Группы</h1>
             <div className="btn-group padding-top-20">
                 <button type="button" onClick={this.onClientGroupCreate} className="btn btn-success">Создать группу клиента</button>
                 <button type="button" onClick={this.onEmployeeGroupCreate} className="btn btn-success">Создать группу исполнителей</button>

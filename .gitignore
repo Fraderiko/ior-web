@@ -1,3 +1,5 @@
 uploads/
 node_modules/
 mongo/
+config.js
+server.js

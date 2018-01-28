@@ -65,7 +65,7 @@ app.post('/order/create', function (req, res) {
                                     from: '"IORcontrol" <support@iorcontrol.ru>', 
                                     to: assigned_to_user.mail, // 
                                     subject: 'Новый заказ в IORcontrol',
-                                    html: '<p>Здравствуйте, ' + name + '</p><p>Для Вас был создан новый заказ: <b>' + req.body.number + '</b>.</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">http://live.iorcontrol.ru</a></p>'
+                                    html: '<p>Здравствуйте, ' + name + '.</p><p>Для Вас был создан новый заказ: <b>' + req.body.number + '</b>.</p></p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">live.iorcontrol.ru</a></p>'
                                 };
                             
                                 mail_service.sendMail(mailOptions)
@@ -83,7 +83,7 @@ app.post('/order/create', function (req, res) {
                                     from: '"IORcontrol" <support@iorcontrol.ru>', 
                                     to: user.mail, // 
                                     subject: 'Новый заказ в IORcontrol',
-                                    html: '<p>Здравствуйте, ' + name + '</p><p>Для Вас был создан новый заказ: <b>' + req.body.number + '</b>.</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">http://live.iorcontrol.ru</a></p>'
+                                    html: '<p>Здравствуйте, ' + name + '.</p><p>Для Вас был создан новый заказ: <b>' + req.body.number + '</b>.</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">http://live.iorcontrol.ru</a></p>'
                                 };
                             
                                 mail_service.sendMail(mailOptions)
@@ -198,7 +198,7 @@ app.post('/order/share-to-email', function (req, res) {
         to: req.body.email, // 
         subject: 'Данные по заказу № ' + req.body.order.number + ' от IORcontrol',
         attachments: prepeareAttachments(),
-        html: '<p>Номер: <b> ' + req.body.order.number + '</b></p><p>Создан: <b>' + Moment(req.body.order.date).format('DD/MM/YYYY') + '</b></p><p>Обновлен: <b>' + Moment(req.body.order.updated).format('DD/MM/YYYY') + '</b></p><p>Тип: <b>' + req.body.order.type.name + '</b></p><p>Текущий статус: <b>' + req.body.order.currentstatus + '</b></p><p>Комментарий: <b>' + req.body.order.comment + '</b></p><p>Исполнитель: <b>' + req.body.order.assignedTo.name + '</b></p><p>Клиент: <b>' + req.body.order.client.name + '</b></p>'+ prepareStatuses() +'<p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">http://live.iorcontrol.ru</a></p>'
+        html: '<p>Номер: <b> ' + req.body.order.number + '</b></p><p>Создан: <b>' + Moment(req.body.order.date).format('DD/MM/YYYY') + '</b></p><p>Обновлен: <b>' + Moment(req.body.order.updated).format('DD/MM/YYYY') + '</b></p><p>Тип: <b>' + req.body.order.type.name + '</b></p><p>Текущий статус: <b>' + req.body.order.currentstatus + '</b></p><p>Комментарий: <b>' + req.body.order.comment + '</b></p><p>Исполнитель: <b>' + req.body.order.assignedTo.name + '</b></p><p>Клиент: <b>' + req.body.order.client.name + '</b></p>'+ prepareStatuses() +'</p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">live.iorcontrol.ru</a></p>'
     };
 
     mail_service.sendMail(mailOptions)
@@ -266,15 +266,15 @@ app.post('/order/set-status', function (req, res) {
                 var mailOptions = {
                     from: '"IORcontrol" <support@iorcontrol.ru>',
                     to: req.body.recipientmail, 
-                    subject: 'Информация о Вашем заказе', 
-                    html: '<p>Здравствуйте,</p><p>Вам был отгружен заказ: <b>'+ req.body.number +'</b></p><p>Для получения более подробной информации необходимо авторизоваться в системе IORcontrol, используя учетные данные ниже: </p><p>Логин: <b>'+ req.body.number +'</b></p><p>Пароль: <b>'+ password + '</b></p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">http://live.iorcontrol.ru</a></p>' 
+                    subject: 'Информация о Вашем заказе в IORcontrol', 
+                    html: '<p>Здравствуйте,</p><p>Вам был отгружен заказ: <b>'+ req.body.number +'</b>.</p><p>Для получения более подробной информации необходимо авторизоваться в системе <a href="http://live.iorcontrol.ru/" target="_blank">IORcontrol</a>, используя учетные данные ниже: </p><p>Логин: <b>'+ req.body.number +'</b></p><p>Пароль: <b>'+ password + '</b></p></p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">live.iorcontrol.ru</a></p>' 
                 };
 
                 mail_service.sendMail(mailOptions)
             }
                 
             if (req.body.recipientphone != "") {
-                var message = "Hello, Your order "+ req.body.number +" is shipped. Login:" + req.body.number + " Password: "+ password +" IORcontrol.ru"
+                var message = "Dear Customer, your order "+ req.body.number +" is shipped. Login: " + req.body.number + " Password: "+ password +" live.iorcontrol.ru"
                 api.sendSms(req.body.recipientphone, message).then(function(response) {
                     console.log(response)
                 }, function() {
@@ -293,7 +293,7 @@ app.post('/order/set-status', function (req, res) {
                     from: '"IORcontrol" <support@iorcontrol.ru>', 
                     to: user.mail, // 
                     subject: 'Обновление заказа в IORcontrol', 
-                    html: '<p>Здравствуйте, ' + createdBy + '</p><p>У заказа номер <b>' + ordernumber + '</b> изменился статус.</p><p>Новый статус: <b>'+ statusName +'</b></p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">http://live.iorcontrol.ru</a></p>' 
+                    html: '<p>Здравствуйте, ' + createdBy + '.</p><p>У заказа номер <b>' + ordernumber + '</b> изменился статус.</p><p>Новый статус: <b>'+ statusName +'</b>.</p></p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">live.iorcontrol.ru</a></p>' 
                 };
             
                 mail_service.sendMail(mailOptions)
@@ -340,8 +340,8 @@ app.post('/order/add-discussion', function (req, res) {
                     var mailOptions = {
                         from: '"IORcontrol" <support@iorcontrol.ru>', 
                         to: clientMail, // 
-                        subject: 'Новое сообщение по заказу в IORcontrol', 
-                        html: '<p>Здравствуйте, ' + clientName + '</p><p>По заказу номер <b>' + order.number + '</b> поступило сообщение</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">http://live.iorcontrol.ru</a></p>' 
+                        subject: 'Обратная связь по заказу в IORcontrol', 
+                        html: '<p>Здравствуйте, ' + clientName + '.</p><p>По заказу номер <b>' + order.number + '</b> поступило сообщение.</p></p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">live.iorcontrol.ru</a></p>' 
                     };
                 
                     mail_service.sendMail(mailOptions)
@@ -355,7 +355,7 @@ app.post('/order/add-discussion', function (req, res) {
                         from: '"IORcontrol" <support@iorcontrol.ru>', 
                         to: recipientmail, // 
                         subject: 'Новое сообщение по заказу в IORcontrol', 
-                        html: '<p>Здравствуйте, </p><p>По заказу номер <b>' + order.number + '</b> поступило сообщение</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">http://live.iorcontrol.ru</a></p>' 
+                        html: '<p>Здравствуйте, </p><p>По заказу номер <b>' + order.number + '</b> поступило сообщение.</p></p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">live.iorcontrol.ru</a></p>' 
                     };
                 
                     mail_service.sendMail(mailOptions)
