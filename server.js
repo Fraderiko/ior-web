@@ -45,7 +45,7 @@ mongoose.connect(mongoDB, {
   useMongoClient: true
 });
 
-app.listen(8888, function () {
+app.listen(3000, function () {
   cronjobs.archiveOrders()
   resolveAdminAccount()
   console.log('Fired at ' + Date());
@@ -156,8 +156,8 @@ function sendNewChatMail(user, order) {
   var mailOptions = {
     from: '"IORcontrol" <support@iorcontrol.ru>',
     to: mail, // 
-    subject: 'Новое сообщение в чате по заказу в IORcontrol',
-    html: '<p>Здравствуйте, ' + name + '</p><p>По заказу: <b>' + order + '</b> поступило новое сообщение в чате.</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://online.iorcontrol.ru">http://online.iorcontrol.ru</a></p>'
+    subject: 'Новое сообщение в чате IORcontrol',
+    html: '<p>Здравствуйте, ' + name + '.</p><p>По заказу: <b>' + order + '</b> поступило новое сообщение в чате.</p></p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">live.iorcontrol.ru</a></p>'
   };
 
   MailService.sendMail(mailOptions)
