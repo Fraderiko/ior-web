@@ -595,7 +595,7 @@ table tr {
 }
 
 .navbar-default {
-  background-color: #42a5f5 !important;
+  background-color: #e4e4e4 !important;
   border: none !important;
   margin: -30px -30px 15px !important;
   padding: 0 22px !important;
@@ -605,7 +605,7 @@ table tr {
 }
 
 .navbar-default .navbar-nav > li > a {
-  color: #ffffff !important;
+  color: #000000 !important;
   font-size: 16px !important;
 }
 .navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
@@ -701,7 +701,7 @@ table tr {
 }
 
 footer {
-  background: #42A5F5;
-  color: white;
+  background: #e4e4e4;
+  color: #000000;
   margin: 0 -30px;
 }
