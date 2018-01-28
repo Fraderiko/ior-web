@@ -1,5 +1,16 @@
+html {
+  height: 100%;
+}
+
 body {
-    padding: 30px;
+  padding: 30px 30px 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+#app {
+  flex: 1 0 auto;
 }
 
 .row {
@@ -584,24 +595,28 @@ table tr {
 }
 
 .navbar-default {
-  background-color: #f8f8f8 !important;
+  background-color: #42a5f5 !important;
   border: none !important;
   margin: -30px -30px 15px !important;
   padding: 0 22px !important;
   box-shadow: 0 4px 5px rgba(74, 74, 74, 0.21) !important;
+  border-radius: 0 !important;
 
 }
 
 .navbar-default .navbar-nav > li > a {
-  color: #2375b5 !important;
+  color: #ffffff !important;
   font-size: 16px !important;
+}
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+  background-color: #349befb0 !important;
 }
 
 .navbar-default .navbar-nav > .active > a,
 .navbar-default .navbar-nav > .active > a:hover,
 .navbar-default .navbar-nav > .active > a:focus {
-  background-color: transparent;
-  border-bottom: 3px solid #75adf1;
+  background-color: #349bef;
+  border-bottom: 3px solid #ff0000;
   margin: 0 0 -3px;
 }
 
@@ -659,4 +674,34 @@ table tr {
 
 .discussionMessageContainer:last-child {
   border-bottom: none;
+}
+
+
+
+.image {
+  margin: 0 10px 5px 0;
+  cursor: pointer;
+}
+
+.image:hover {
+  opacity: 0.8;
+}
+
+.video-react .video-react-big-play-button {
+  line-height: 1.4em !important;
+  top: 42% !important;
+  left: 38% !important;
+  right: 38% !important;
+  width: 23% !important;
+}
+
+.footer {
+  flex-shrink: 0;
+  padding: 0 20px;
+}
+
+footer {
+  background: #42A5F5;
+  color: white;
+  margin: 0 -30px;
 }

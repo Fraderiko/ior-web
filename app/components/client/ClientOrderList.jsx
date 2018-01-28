@@ -1480,7 +1480,7 @@ var ClientOrderList = createReactClass({
                 <div className={this.state.mailOrderClassValidation}>
                   <input className="form-control pull-left" value={this.state.mailOrder} onChange={this.handleMailOrderChange} style={{width: 200, marginRight: 20}} placeholder={"Укажите адрес почты"}></input>
                 </div>
-                <button type="button" className="btn btn-default pull-left" onClick={this.sendOrderToEmail()}>Отправить</button>
+                <button type="button" className="btn btn-primary pull-left" onClick={this.sendOrderToEmail()}>Отправить</button>
                 <button type="button" className="btn btn-default" data-dismiss="modal">Закрыть</button>
               </div>
             </div>
