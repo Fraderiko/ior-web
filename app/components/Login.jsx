@@ -64,18 +64,31 @@ var Login = createReactClass({
           <div className="container">
             <div className="col align-items-center">
               <div className="row">
-                <div className="well col-sm-3 col-sm-offset-5">
-                  <form onSubmit={this.onLoginButton}>
+                <div className="well as col-sm-3 col-sm-offset-5">
+
+                  <div className="as-auth-box">
+                    <div className="as-auth-box--btn">
+                      Авторизация
+                    </div>
+                    <div className="as-auth-box--btn">
+                      <a href="http://iorcontrol.ru" target="_blank" >На IORcontrol</a>
+                    </div>
+                  </div>
+
+                  <form className="as-login-form" onSubmit={this.onLoginButton}>
                     <div className="form-group">
-                      <label htmlFor="email">Логин:</label>
-                      <input ref="login" value={this.state.login} onChange={this.handleLoginChange} className="form-control input-lg" id="email"></input>
+                      <input ref="login" value={this.state.login} onChange={this.handleLoginChange} className="form-control input-lg" id="email" placeholder="Логин"></input>
                     </div>
                     <div className="form-group">
-                      <label htmlFor="pwd">Пароль:</label>
-                      <input type="password" value={this.state.password} onChange={this.handlePasswordChange} className="form-control input-lg" id="pwd"></input>
+                      <input type="password" value={this.state.password} onChange={this.handlePasswordChange} className="form-control input-lg" id="pwd" placeholder="Пароль"></input>
                     </div>
-                    <button type="submit" className="btn btn-default">Войти</button>
+                    <button type="submit" className="btn as-login btn-success">Войти</button>
+
+                   
                   </form>
+
+
+
                 </div>
               </div>
             </div>

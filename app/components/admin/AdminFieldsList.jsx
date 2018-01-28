@@ -103,7 +103,7 @@ var AdminFieldsList = createReactClass({
         <div className="row">
 
         <div className="well col-lg-8">
-            <h1>Поля</h1>
+            <h1 className="hide">Поля</h1>
             <div className="padding-top-20">
                 <button type="button" onClick={this.createField} className="btn  btn-success">Создать поле</button>
             </div>

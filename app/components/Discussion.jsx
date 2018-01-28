@@ -237,16 +237,16 @@ var Discussion = createReactClass({
     render: function () {
         return (
             <div>
-                <h2>Обратная связь</h2>
+                <h2 className="center">Обратная связь</h2>
                 <div>
                     {this.prepareMessages()}
                 </div>
                 <form className="input" onSubmit={this.submitHandler}>
-                    <textarea className="form-control" type="text" ref="msg" />
+                    <textarea className="form-control" rows="4" type="text" ref="msg" />
                     <br />
                     {this.prereImageField()}
                     {this.prepareVideoField()}
-                    <input type="submit" value="Отправить" />
+                    <button className="btn btn-primary" type="submit">Отправить</button>
                 </form>
                 <Alert stack={{ limit: 3 }} />
             </div>
