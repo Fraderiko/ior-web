@@ -272,8 +272,8 @@ var ClientCreateOrder = createReactClass({
     }
 
     return (
-      <div className="well">
-        <h1>Создать заказ</h1>
+      <div className="well as-mt-30">
+        <h1 className="hide">Создать заказ</h1>
         <form onSubmit={this.submitHandler}>
           <div className={this.state.validatedNameClassName}>
             <label>Номер заказа</label>

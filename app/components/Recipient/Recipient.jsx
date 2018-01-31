@@ -151,13 +151,13 @@ var Recipient = createReactClass({
   render: function () {
     return (
       <div>
-        <h1>{this.resolveTitle()}</h1>
+        <h1 className="hide">{this.resolveTitle()}</h1>
         <div className="row row-space">
           <div>
             <div className="well col-lg-6">
               {this.prepareContent()}
             </div>
-            <div className="col-lg-6">
+            <div className="col-lg-6 no-padding">
               <div className="well col-lg-offset-1 col-lg-11">
               {this.resolveOrder()}
               </div>

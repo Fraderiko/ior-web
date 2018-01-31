@@ -62,7 +62,7 @@ var AdminStatusesList = createReactClass({
         <div className="row">
 
         <div className="well col-lg-8">
-            <h1>Статусы</h1>
+            <h1 className="hide">Статусы</h1>
             <div className="padding-top-20">
                 <button type="button" onClick={this.createStatus} className="btn  btn-success">Создать статус</button>
             </div>

@@ -41,14 +41,14 @@ var Feedback = createReactClass({
   },
   render: function () {
     return (
-      <div className="well">
-        <h1>Обратная связь</h1>
+      <div className="well as-mt-30">
+        <h1 className="hide">Обратная связь</h1>
         <form onSubmit={this.submitHandler}>
           <div className="form-group">
             <label>Сообщение</label>
-            <textarea className="form-control" id="phone" ref="body" placeholder="Напишите здесь"></textarea>
+            <textarea className="form-control" id="phone" ref="body" rows="8" placeholder="Напишите здесь свое сообщение"></textarea>
           </div>
-          <button type="submit" className="btn btn-primary" >Сохранить</button>
+          <button type="submit" className="btn btn-primary" >Отправить</button>
         </form>
         <Alert stack={{ limit: 3 }} />
       </div>

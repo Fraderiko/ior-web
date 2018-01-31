@@ -1386,7 +1386,7 @@ var ClientOrderList = createReactClass({
       <div>
         <div className="row row-space">
           <div className="well col-lg-8">
-            <h2>{this.state.title}</h2>
+            <h2 className="hide">{this.state.title}</h2>
             <table id="orders-table" className="table table-striped">
               <thead>
                 <tr>
@@ -1418,7 +1418,7 @@ var ClientOrderList = createReactClass({
               <br></br>
               <div className="btn-toolbar">
                 <button className="btn btn-default" type="button" data-toggle="modal" data-target="#filterByDateModal">Фильтровать по датам</button>
-                <button className="btn btn-success" onClick={this.excelExport()} type="button">Выгрузить в xls</button>
+                <button className="btn btn-success" onClick={this.excelExport()} type="button">Выгрузить в .xls</button>
               </div>
               <br></br>
               <div className="btn-toolbar">
@@ -1478,9 +1478,9 @@ var ClientOrderList = createReactClass({
               </div>
               <div className="modal-footer">
                 <div className={this.state.mailOrderClassValidation}>
-                  <input className="form-control pull-left" value={this.state.mailOrder} onChange={this.handleMailOrderChange} style={{width: 200, marginRight: 20}} placeholder={"Введите почту"}></input>
+                  <input className="form-control pull-left" value={this.state.mailOrder} onChange={this.handleMailOrderChange} style={{width: 200, marginRight: 20}} placeholder={"Укажите адрес почты"}></input>
                 </div>
-                <button type="button" className="btn btn-default pull-left" onClick={this.sendOrderToEmail()}>Отправить заказ на почту</button>
+                <button type="button" className="btn btn-primary pull-left" onClick={this.sendOrderToEmail()}>Отправить</button>
                 <button type="button" className="btn btn-default" data-dismiss="modal">Закрыть</button>
               </div>
             </div>

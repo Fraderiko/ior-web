@@ -112,13 +112,13 @@ class Chatroom extends React.Component {
                     }
                 </ul>
                 <form className="input" onSubmit={(e) => this.submitMessage(e)}>
-                    <input type="text" ref="msg" />
-                    <input type="submit" value="Отправить" />
+                    <input type="text" ref="msg" className="form-control" />
+                    <input type="submit" className="btn btn-success" value="Отправить" />
                     <FileInput accept={"image/*"} onChange={this.handleFileChanged.bind(this)}>
-                        <img width="30" height="30" src="./static/photo.png" />
+                        <img className="as-img-ch" width="30" height="30" src="./static/photo.png" />
                     </FileInput>
                     <FileInput accept={"video/mp4"} onChange={this.handleVideoFileChanged.bind(this)}>
-                        <img width="30" height="30" src="./static/video.png" />
+                        <img className="as-img-ch2"width="30" height="30" src="./static/video.png" />
                     </FileInput>
                 </form>
             </div>
