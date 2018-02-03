@@ -347,7 +347,7 @@ app.post('/order/add-discussion', function (req, res) {
                     mail_service.sendMail(mailOptions)
 
                     if (clientPush_id != "") {
-                        api.postPush(clientPush_id, "По заказу "+ order.number +"поступило сообщение")
+                        api.postPush(clientPush_id, "По заказу №"+ order.number +" получена обратная связь")
                     }
 
                 } else {
@@ -362,7 +362,7 @@ app.post('/order/add-discussion', function (req, res) {
 
                     User.findOne({name: order.number}, function (err, user) {
                         if (user.push_id != "") {
-                            api.postPush(user.push_id, "По заказу "+ order.number +"поступило сообщение")
+                            api.postPush(user.push_id, "По заказу №"+ order.number +" поступило сообщение")
                         }
                     })
                 }
