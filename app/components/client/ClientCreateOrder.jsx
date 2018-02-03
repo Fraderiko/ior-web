@@ -274,7 +274,6 @@ var ClientCreateOrder = createReactClass({
     return (
       <div className="well as-mt-30">
         <h1 className="hide">Создать заказ</h1>
-        <form onSubmit={this.submitHandler}>
           <div className={this.state.validatedNameClassName}>
             <label>Номер заказа</label>
             <input className="form-control" value={this.state.number} onChange={this.handleNumberChange} id="email" placeholder="Укажите номер"></input>
@@ -307,7 +306,6 @@ var ClientCreateOrder = createReactClass({
             <textarea className="form-control" id="comment" value={this.state.comment} onChange={this.handleCommentChange} placeholder="Если необходимо"></textarea>
           </div>
           <button onClick={this.submitHandler} className="btn btn-primary" >Создать</button>
-        </form>
         <Alert stack={{ limit: 3 }} />
       </div>
     )
