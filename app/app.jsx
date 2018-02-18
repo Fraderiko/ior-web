@@ -17,6 +17,7 @@ var AdminStatusesList = require(__dirname + '/components/admin/AdminStatusesList
 var AdminFieldsList = require(__dirname + '/components/admin/AdminFieldsList.jsx')
 var AdminPassword = require(__dirname + '/components/admin/AdminPassword.jsx')
 var AdminSettings = require(__dirname + '/components/admin/AdminSettings.jsx')
+var AdminEmployeeGroupList = require(__dirname + '/components/admin/AdminEmployeeGroupList.jsx')
 
 var Recipient = require(__dirname + '/components/Recipient/Recipient.jsx')
 var RecipientNav = require(__dirname + '/components/Recipient/RecipientNav.jsx')
@@ -209,6 +210,7 @@ var AdminInterfaceApp = createReactClass({
         <Switch>
           <Route exact path="/" component={ClientOrderList}/>
           <Route path="/groups" component={AdminGroupsList} />
+          <Route path="/egroups" component={AdminEmployeeGroupList}/>
           <Route path="/users" component={AdminUsersList} />
           <Route path="/orders" component={AdminOrdersList} />
           <Route path="/statuses" component={AdminStatusesList} />

@@ -41,7 +41,9 @@ var orderSchema = new Schema({
     name: String,
     state: String,
     isFinal: Boolean,
-    fields: [fieldsSchema]
+    fields: [fieldsSchema],
+    groups_permission_to_edit: [{ type: Schema.Types.ObjectId, ref: 'EmployeeGroup' }],
+    users_permission_to_edit: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   }],
   recipientmail: String,
   recipientphone: String,
@@ -49,7 +51,8 @@ var orderSchema = new Schema({
   cancelReason: String,
   discussion: [discussionSchema],
   isArchived: Boolean,
-  messages: [messageSchema]
+  messages: [messageSchema],
+  assignedToGroup: { type: Schema.Types.ObjectId, ref: 'EmployeeGroup' },
 });
 
 // the schema is useless so far

@@ -2,6 +2,15 @@ var axios = require('axios');
 var config = require('../../../../config.js');
 
 module.exports = {
+    
+    checkIfUserHasPermissionToEditStatus: function(object) {
+        return axios.post(config.host + '/egroup-user/', object).then(function (res) {
+            return res.data;
+        }, function(res) {
+            console.log("ERROR!");
+            console.log(res);
+        });
+    },
 
     getOrderTemplates: function() {
         return axios.post(config.host + '/order-templates').then(function (res) {

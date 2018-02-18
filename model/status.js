@@ -7,7 +7,9 @@ var statusSchema = new Schema({
   state: String,
   updated: Number,
   fields: [{ type: Schema.Types.ObjectId, ref: 'Field' }],
-  isFinal: Boolean
+  isFinal: Boolean,
+  groups_permission_to_edit: [{ type: Schema.Types.ObjectId, ref: 'EmployeeGroup' }],
+  users_permission_to_edit: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 });
 
 // the schema is useless so far

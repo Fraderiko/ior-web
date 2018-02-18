@@ -35,6 +35,7 @@ app.use(require('./routes/upload.js'));
 app.use(require('./routes/feedback.js'));
 app.use(require('./routes/export.js'));
 app.use(require('./routes/settings.js'));
+app.use(require('./routes/employee-group'));
 
 app.use(require('./routes/order.js'));
 

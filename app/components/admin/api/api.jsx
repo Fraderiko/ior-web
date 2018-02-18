@@ -3,6 +3,40 @@ var config = require('../../../../config.js');
 
 module.exports = {
 
+    updateEmplGroups: function(group) {
+        return axios.put(config.host + '/egroup', group).then(function (res) {
+            return res.data;
+        }, function(res) {
+            console.log("ERROR!");
+            console.log(res);
+        });
+    },
+
+    deleteEmplGroups: function(group) {
+        return axios.delete(config.host + '/egroup/' + group._id).then(function (res) {
+            return res.data;
+        }, function(res) {
+            console.log("ERROR!");
+            console.log(res);
+        });
+    },
+
+    getEmplGroups: function() {
+        return axios.get(config.host + '/egroups').then(function (res) {
+            return res.data;
+        }, function(res) {
+            console.log("ERROR!");
+            console.log(res);
+        });
+    },
+    createEmplGroups: function(group) {
+        return axios.post(config.host + '/egroup', group).then(function (res) {
+            return res.data;
+        }, function(res) {
+            console.log("ERROR!");
+            console.log(res);
+        });
+    },
     getFields: function() {
         return axios.post(config.host + '/fields').then(function (res) {
             return res.data;

@@ -3,6 +3,7 @@ var router = express.Router();
 
 var Order = require('../model/order.js');
 var User = require('../model/user.js');
+var EmployeeGroup = require('../model/employee-groups')
 var Group = require('../model/group.js')
 var bodyParser = require('body-parser');
 var Moment = require('moment')
@@ -29,25 +30,58 @@ function makePassword() {
   }
 
 app.post('/order/create', function (req, res) {
-    var newOrder = new Order({ 
-        number: req.body.number,
-        date: req.body.date,
-        updated: req.body.date,
-        type: req.body.type,
-        assignedTo: req.body.assignedTo,
-        comment: req.body.comment,
-        currentstatus: req.body.currentstatus,
-        statuses: req.body.statuses,
-        createdBy: req.body.createdBy,
-        group: req.body.group,
-        recipientmail: req.body.recipientmail,
-        recipientphone: req.body.recipientphone,
-        client: req.body.client,
-        cancelReason: '',
-        isArchived: req.body.isArchived,
-        discussion: req.body.discussion,
-        messages: req.body.messages,
-     })
+
+    if (req.body.assignedTo == "") {
+        req.body.assignedTo = undefined
+    }
+
+    if (req.body.assignedToGroup == "") {
+        req.body.assignedToGroup = undefined
+    }
+    
+    if (req.body.assignedToGroup != undefined && req.body.assignedToGroup != "") {
+        var newOrder = new Order({ 
+            number: req.body.number,
+            date: req.body.date,
+            updated: req.body.date,
+            type: req.body.type,
+            assignedToGroup: req.body.assignedToGroup,
+            comment: req.body.comment,
+            currentstatus: req.body.currentstatus,
+            statuses: req.body.statuses,
+            createdBy: req.body.createdBy,
+            group: req.body.group,
+            recipientmail: req.body.recipientmail,
+            recipientphone: req.body.recipientphone,
+            client: req.body.client,
+            cancelReason: '',
+            isArchived: req.body.isArchived,
+            discussion: req.body.discussion,
+            messages: req.body.messages,
+         })
+    } else {
+        var newOrder = new Order({ 
+            number: req.body.number,
+            date: req.body.date,
+            updated: req.body.date,
+            type: req.body.type,
+            assignedTo: req.body.assignedTo,
+            comment: req.body.comment,
+            currentstatus: req.body.currentstatus,
+            statuses: req.body.statuses,
+            createdBy: req.body.createdBy,
+            group: req.body.group,
+            recipientmail: req.body.recipientmail,
+            recipientphone: req.body.recipientphone,
+            client: req.body.client,
+            cancelReason: '',
+            isArchived: req.body.isArchived,
+            discussion: req.body.discussion,
+            messages: req.body.messages,
+         })
+    }
+     
+     console.log(req.body)
 
     Order.findOne({number : req.body.number}, function (err, order) {
         if (order != null) {
@@ -58,23 +92,53 @@ app.post('/order/create', function (req, res) {
         
                 User.findOne({_id: req.body.createdBy}, function(err, user) {
                     if (user.type == 'client') {
-                        User.findOne({_id: req.body.assignedTo}, function(err, assigned_to_user) {
-                            if (assigned_to_user.new_orders_notification == true) { 
-                                var name = assigned_to_user.name
-                                var mailOptions = {
-                                    from: '"IORcontrol" <support@iorcontrol.ru>', 
-                                    to: assigned_to_user.mail, // 
-                                    subject: 'Новый заказ в IORcontrol',
-                                    html: '<p>Здравствуйте, ' + name + '.</p><p>Для Вас был создан новый заказ: <b>' + req.body.number + '</b>.</p></p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">live.iorcontrol.ru</a></p>'
-                                };
-                            
-                                mail_service.sendMail(mailOptions)
-                            }
 
-                            if (assigned_to_user.new_orders_push_notification == true) {
-                                api.postPush(assigned_to_user.push_id, "Для Вас был создан новый заказ")
-                            }
-                        })
+                        if (req.body.assignedTo != undefined) {
+                            User.findOne({_id: req.body.assignedTo}, function(err, assigned_to_user) {
+                                if (assigned_to_user.new_orders_notification == true) { 
+                                    var name = assigned_to_user.name
+                                    var mailOptions = {
+                                        from: '"IORcontrol" <support@iorcontrol.ru>', 
+                                        to: assigned_to_user.mail, // 
+                                        subject: 'Новый заказ в IORcontrol',
+                                        html: '<p>Здравствуйте, ' + name + '.</p><p>Для Вас был создан новый заказ: <b>' + req.body.number + '</b>.</p></p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">live.iorcontrol.ru</a></p>'
+                                    };
+                                
+                                    mail_service.sendMail(mailOptions)
+                                }
+    
+                                if (assigned_to_user.new_orders_push_notification == true) {
+                                    api.postPush(assigned_to_user.push_id, "Для Вас был создан новый заказ")
+                                }
+                            })
+                        } else {
+                            EmployeeGroup.findOne({_id: req.body.assignedToGroup}).exec(function (err, group) {
+
+                                group.users.forEach(function(user) {
+
+                                    User.findOne({_id: user}, function (err, result) {
+                                        if (result.new_orders_notification == true) { 
+                                            var name = result.name
+                                            var mailOptions = {
+                                                from: '"IORcontrol" <support@iorcontrol.ru>', 
+                                                to: result.mail, // 
+                                                subject: 'Новый заказ в IORcontrol',
+                                                html: '<p>Здравствуйте, ' + name + '.</p><p>Для группы ' + group.name + ' был создан: <b>' + req.body.number + '</b>.</p></p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">live.iorcontrol.ru</a></p>'
+                                            };
+                                        
+                                            mail_service.sendMail(mailOptions)
+                                        }
+            
+                                        if (result.new_orders_push_notification == true) {
+                                            api.postPush(result.push_id, "Для Вас был создан новый заказ")
+                                        }
+                                    })
+
+                                    
+                                })
+                            })
+                        }
+
                     } else {
                         User.findOne({_id: req.body.client}, function(err, user) {
                             if (user.new_orders_notification == true) { 
@@ -109,16 +173,40 @@ app.post('/order/', function (req, res) {
 })
 
 app.post('/order-by-employee/:id', function (req, res) {
-    Order.find({ $and: [ { $or: [ { assignedTo: req.params.id }, { createdBy: req.params.id }] }, { isArchived: false } ]}).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'createdBy', select: "name"}).populate({ path:'client', select: "name"}).exec(function (err, orders) {
+    Order.find({ $and: [ { $or: [ { assignedTo: req.params.id }, { createdBy: req.params.id }] }, { isArchived: false } ]}).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'createdBy', select: "name"}).populate({ path:'client', select: "name"}).populate({ path: 'assignedToGroup'}).exec(function (err, orders) {
         if (err) throw err;
-        res.send(orders)
+
+        EmployeeGroup.find({}, function (err, result) {
+
+            var array = []
+
+            result.forEach(function(item) {
+                item.users.forEach(function (i) {
+                    if (i == req.params.id) {
+                        array.push(item._id)
+                    }
+                })
+            })
+
+            console.log(array)
+
+            Order.find({ $and: [{ assignedToGroup: { $in: array }}, { isArchived: false } ]}).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'createdBy', select: "name"}).populate({ path:'client', select: "name"}).populate({ path: 'assignedToGroup'}).exec(function (err, ordersWithGroup) {
+                if (err) throw err;
+        
+                var result = orders.concat(ordersWithGroup)
+
+                res.send(result)
+        
+            });
+        })
+
     });
 })
 
 app.post('/order-search-by-client/', function (req, res) {
     Group.findOne({users: req.body.id}, function(err, group) {
         if (group != null) {
-            Order.find( { $and: [{ group: group._id }, { number : {$regex : ".*"+req.body.query+".*"} }] }).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'createdBy'}).populate({ path:'client'}).exec(function (err, orders) {
+            Order.find( { $and: [{ group: group._id }, { number : {$regex : ".*"+req.body.query+".*"} }] }).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'createdBy'}).populate({ path:'assignedToGroup', select: "name"}).populate({ path:'client'}).exec(function (err, orders) {
                 if (err) throw err;
                 res.send(orders)
             });
@@ -130,7 +218,7 @@ app.post('/order-search-by-client/', function (req, res) {
 
 app.post('/order-search-by-employee/', function (req, res) {
     console.log(req.params)
-    Order.find({ $and: [ { $or: [ { assignedTo: req.body.id }, { createdBy: req.body.id }] }, { number : {$regex : ".*"+req.body.query+".*"}}] }).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'createdBy', select: "name"}).populate({ path:'client', select: "name"}).exec(function (err, orders) {
+    Order.find({ $and: [ { $or: [ { assignedTo: req.body.id }, { createdBy: req.body.id }] }, { number : {$regex : ".*"+req.body.query+".*"}}] }).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'createdBy', select: "name"}).populate({ path:'assignedToGroup', select: "name"}).populate({ path:'client', select: "name"}).exec(function (err, orders) {
         if (err) throw err;
         res.send(orders)
     });
@@ -146,7 +234,7 @@ app.post('/order-search/', function (req, res) {
 app.post('/order-by-group/:id', function (req, res) {
     Group.findOne({users: req.params.id}, function(err, group) {
         if (group != null) {
-            Order.find( { $and: [{ group: group._id }, { isArchived: false }] }).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'createdBy'}).populate({ path:'client'}).exec(function (err, orders) {
+            Order.find( { $and: [{ group: group._id }, { isArchived: false }] }).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'assignedToGroup' }).populate({ path:'createdBy'}).populate({ path:'client'}).exec(function (err, orders) {
                 if (err) throw err;
                 res.send(orders)
             });

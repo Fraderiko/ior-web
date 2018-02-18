@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 app.post('/groups/create', function (req, res) {
     console.log(req.body)
-    var group = new Group({ name: req.body.name, type: req.body.type, users: req.body.users, canworkwith: req.body.canworkwith, orders: req.body.orders })
+    var group = new Group({ name: req.body.name, type: req.body.type, users: req.body.users, canworkwith: req.body.canworkwith, orders: req.body.orders, canworkwithgroups: req.body.canworkwithgroups })
     group.save(function (err) {
         if (err) throw err;
     })
@@ -18,7 +18,7 @@ app.post('/groups/create', function (req, res) {
 })
 
 app.post('/groups/', function (req, res) {
-    Group.find().populate('users').populate('canworkwith').populate('orders').exec(function (err, groups) {
+    Group.find().populate('users').populate('canworkwith').populate('orders').populate('canworkwithgroups').exec(function (err, groups) {
         if (err) throw err;
         res.send(groups)
     });
@@ -32,14 +32,14 @@ app.post('/group/:id', function (req, res) {
 })
 
 app.post('/group-details/', function (req, res) {
-    Group.findOne({_id: req.body._id}).populate('canworkwith').populate('orders').exec(function (err, group) {
+    Group.findOne({_id: req.body._id}).populate('canworkwith').populate('canworkwithgroups').populate('orders').exec(function (err, group) {
         if (err) throw err;
         res.send(group)
     });
 })
 
 app.post('/group-by-user/', function (req, res) {
-    Group.find().populate('users').populate('canworkwith').populate('orders').populate({path: 'orders', populate: { path: 'statuses', populate: { path: 'fields' }}}).exec(function (err, groups) {
+    Group.find().populate('users').populate('canworkwith').populate('canworkwithgroups').populate('orders').populate({path: 'orders', populate: { path: 'statuses', populate: { path: 'fields' }}}).exec(function (err, groups) {
         if (err) throw err;
 
         var index;

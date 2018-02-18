@@ -20,7 +20,7 @@ var ClientCreateOrder = createReactClass({
       validatedNameClassName: "form-group",
       validatedTypeClassName: "form-group",
       validatedAssignedToClassName: "form-group",
-      validatedEmailClassName: "form-group"
+      validatedEmailClassName: "form-group",
     }
   },
   componentDidMount: function () {
@@ -43,6 +43,7 @@ var ClientCreateOrder = createReactClass({
       api.getCanWorkWith(_id).then(function (response) {
         console.log(response)
         that.setState({
+          canworkwithgroups: response.canworkwithgroups,
           canworkwith: response.canworkwith,
           orders: response.orders
         })
@@ -79,7 +80,15 @@ var ClientCreateOrder = createReactClass({
   },
   prepareEmployee: function () {
     if (this.state.canworkwith.length > 0) {
-      return this.state.canworkwith.map(function (user) { return <option key={user._id} value={user.name}>{user.name}</option> })
+
+      var users = this.state.canworkwith.map(function (user) { return <option key={user._id} value={user.name}>{user.name}</option> })
+
+      if (this.state.type == 'client') {
+        var groups = this.state.canworkwithgroups.map(function (group) { return <option key={group._id} value={group.name}>{group.name}</option> })
+        return users.concat(groups)
+      }
+
+      return users.concat(groups)
     }
   },
   handleNumberChange: function (e) {
@@ -159,6 +168,7 @@ var ClientCreateOrder = createReactClass({
         updated: new Date().getTime(),
         type: that.getOrderType(),
         currentstatus: "Создан",
+        assignedToGroup: that.getAssignedToGroup(),
         assignedTo: that.getAssignedTo(),
         comment: that.state.comment,
         statuses: that.getStatuses(),
@@ -169,9 +179,9 @@ var ClientCreateOrder = createReactClass({
         client: that.resolveClient(),
         isArchived: false,
         cancelReason: '',
-        messages: []
+        messages: [],
       }
-
+      
       api.createOrder(order).then(function (response) {
         if (response.result == "ok") {
           that.props.history.push('/?created=true')
@@ -212,6 +222,23 @@ var ClientCreateOrder = createReactClass({
           return this.state.canworkwith[i]._id
         }
       }
+
+      return undefined
+
+    } else {
+      return this.state._id
+    }
+  },
+  getAssignedToGroup: function() {
+    if (this.state.type == 'client') {
+      for (var i = 0; i < this.state.canworkwithgroups.length; i++) {
+        if (this.state.canworkwithgroups[i].name == this.state.assignedTo) {
+          return this.state.canworkwithgroups[i]._id
+        }
+      }
+
+      return undefined
+
     } else {
       return this.state._id
     }
@@ -236,6 +263,8 @@ var ClientCreateOrder = createReactClass({
       }
       var status = {
         name: template[0].statuses[i].name,
+        users_permission_to_edit: template[0].statuses[i].users_permission_to_edit,
+        groups_permission_to_edit: template[0].statuses[i].groups_permission_to_edit,
         fields: fields,
         isFinal: template[0].statuses[i].isFinal || false
       }

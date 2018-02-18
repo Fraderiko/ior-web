@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 app.post('/statuses/create', function (req, res) {
     console.log(req.body)
-    var status = new Status({ name: req.body.name, state: "New", fields: req.body.fields, isFinal: req.body.isFinal })
+    var status = new Status({ name: req.body.name, state: "New", fields: req.body.fields, isFinal: req.body.isFinal, users_permission_to_edit: req.body.users_permission_to_edit, groups_permission_to_edit: req.body.groups_permission_to_edit })
     status.save(function (err) {
         if (err) throw err;
     })
@@ -18,7 +18,7 @@ app.post('/statuses/create', function (req, res) {
 })
 
 app.post('/statuses/', function (req, res) {
-    Status.find().populate('fields').exec(function (err, statuses) {
+    Status.find().populate('fields').populate('groups_permission_to_edit').populate('users_permission_to_edit').exec(function (err, statuses) {
         if (err) throw err;
         res.send(statuses)
     });

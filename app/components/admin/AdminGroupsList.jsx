@@ -6,6 +6,7 @@ var api = require('./api/api.jsx');
 var AdminGroupsList = createReactClass({
     componentDidMount: function() {
         this.fetchGroups()
+        this.fetchEGroups()
         this.fetchUsers()
     },
     getInitialState: function () {
@@ -15,6 +16,16 @@ var AdminGroupsList = createReactClass({
             clients: [],
             empoloyees: []
         }
+    },
+    fetchEGroups: function() {
+        var that = this
+        api.getEmplGroups().then(function(groups) {
+            that.setState({
+                egroups: groups
+            })
+        }, function() {
+
+        })
     },
     fetchUsers: function () {
         var that = this
@@ -148,7 +159,14 @@ var AdminGroupsList = createReactClass({
     prepareModal: function () {
         if (this.state.modalIsActive == true) {
             if (this.state.type == "create-client") {
-                return <AdminGroupDetails type={"client"} clients={this.state.clients} employees={this.state.employees} finishModal={this.finishModal}/>
+                return <AdminGroupDetails
+                type={"client"}
+                clients={this.state.clients}
+                employees={this.state.employees}
+                finishModal={this.finishModal}
+                egroups={this.state.egroups}
+                orders={this.state.orders}
+                />
             } else if (this.state.type == "create-employee") {
                 return <AdminGroupDetails type={"employee"} employees={this.state.employees} clients={this.state.clients} finishModal={this.finishModal}/>
             } else if (this.state.type == "details-client") {
@@ -162,6 +180,8 @@ var AdminGroupsList = createReactClass({
                                           initialSelectedEmployee={this.state.group.canworkwith}
                                           initialSelectedOrders={this.state.group.orders}
                                           orders={this.state.orders}
+                                          egroups={this.state.egroups}
+                                          initialSelectedEmployeeGroups={this.state.group.canworkwithgroups}
                                           />
             } else if (this.state.type == "details-employee") {
                 return <AdminGroupDetails type={"employee"}

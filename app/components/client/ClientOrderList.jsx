@@ -61,7 +61,7 @@ var ClientOrderList = createReactClass({
 
     var socket = Socket(config.base_url + ':3001/')
     // socket.on('connect', function() {
-      socket.emit("_id", _id)
+    socket.emit("_id", _id)
     // })
 
     return {
@@ -550,11 +550,16 @@ var ClientOrderList = createReactClass({
     var that = this
 
     if (this.state.activeOrder != undefined) {
-      return (
-        <form>
-          {this.prepareStatusFields()}
-        </form>
-      )
+
+      if (this.state.activeStatus != undefined) {
+        return (
+          <form>
+            {this.state.activeStatus}
+          </form>
+        )
+      } else {
+        { this.prepareStatusFields() }
+      }
     }
   },
   onStatusSubmit: function () {
@@ -609,59 +614,94 @@ var ClientOrderList = createReactClass({
       })
     }
   },
-  orderUpdated: function() {
+  orderUpdated: function () {
     $("#editOrderModal").modal('hide');
     this.fetchOrders()
     Alert.success('Заказ обновлен', {
-        position: 'top',
-        effect: 'slide',
-        timeout: 3000
+      position: 'top',
+      effect: 'slide',
+      timeout: 3000
     });
-  }, 
+  },
   prepareStatusFields: function () {
     var cookies = new Cookies()
     var userType = cookies.get('type')
 
     var that = this
 
-    if (this.state.currentStatusIndex == (this.state.statusIndex - 1) || userType == 'client' || userType == 'admin' || this.state.activeOrder.statuses[this.state.statusIndex - 1].state == 'Filled') {
-      var array = []
-      for (var i = 0; i < this.state.activeOrder.statuses[this.state.statusIndex - 1].fields.length; i++) {
-        var name = this.state.activeOrder.statuses[this.state.statusIndex - 1].fields[i].name
-        var _id = this.state.activeOrder.statuses[this.state.statusIndex - 1].fields[i]._id
-        var type = this.state.activeOrder.statuses[this.state.statusIndex - 1].fields[i].type
-        var value = this.state.activeOrder.statuses[this.state.statusIndex - 1].fields[i].value
-        if (this.state.activeOrder.statuses[this.state.statusIndex - 1].fields[i].media != undefined) {
-          var media = this.state.activeOrder.statuses[this.state.statusIndex - 1].fields[i].media
-        } else {
-          var media = []
-        }
+    var hasPermission = false;
 
-        if (value != undefined) {
-          array.push(that.prepareFieldByType(type, name, _id, value, media))
-        } else if (media.length > 0) {
-          array.push(that.prepareFieldByType(type, name, _id, value, media))
-        } else if (value == undefined && type == 'employee') {
-          array.push(that.prepareFieldByType(type, name, _id, value, media))
-        }
-      }
+    var status;
 
-      if (userType == 'employee' && this.state.activeOrder.statuses[this.state.statusIndex - 1].state != 'Filled') {
-        array.push(<button key={'status-submit-button'} className="btn btn-primary" onClick={that.onStatusSubmit()}>Сохранить</button>)
-      }
-      return array
-    } else {
-      return <h1 key={this.makeKey()} className="text-center">Необходимо заполнить предыдущий статус, прежде чем заполнять данный</h1>
+    if (that.state.activeOrder.statuses[that.state.statusIndex - 1].users_permission_to_edit == undefined && this.state.activeOrder.statuses[this.state.statusIndex - 1].groups_permission_to_edit == undefined) {
+      hasPermission = true
+      prepareStatus(hasPermission)
+      return
     }
 
+    api.checkIfUserHasPermissionToEditStatus({ groups: this.state.activeOrder.statuses[this.state.statusIndex - 1].groups_permission_to_edit, user: this.state._id }).then(function (response) {
 
+      if (response.result == true || that.state.activeOrder.statuses[that.state.statusIndex - 1].users_permission_to_edit.includes(that.state._id)) {
+        hasPermission = true
+      } else {
+        hasPermission = false;
+      }
+
+      prepareStatus(hasPermission)
+
+    }, function () {
+
+    })
+
+    function prepareStatus(hasPermission) {
+      if (that.state.currentStatusIndex == (that.state.statusIndex - 1) || userType == 'client' || userType == 'admin' || that.state.activeOrder.statuses[that.state.statusIndex - 1].state == 'Filled') {
+        var array = []
+        for (var i = 0; i < that.state.activeOrder.statuses[that.state.statusIndex - 1].fields.length; i++) {
+          var name = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].name
+          var _id = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i]._id
+          var type = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].type
+          var value = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].value
+          if (that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].media != undefined) {
+            var media = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].media
+          } else {
+            var media = []
+          }
+
+          if (userType == 'employee' && hasPermission == false) {
+            console.log()
+            status = <h1 key={that.makeKey()} className="text-center">Нет прав для заполнения статуса</h1>
+            that.setState({ activeStatus: status })
+            return
+          }
+
+          if (value != undefined) {
+            array.push(that.prepareFieldByType(type, name, _id, value, media))
+          } else if (media.length > 0) {
+            array.push(that.prepareFieldByType(type, name, _id, value, media))
+          } else if (value == undefined && type == 'employee') {
+            array.push(that.prepareFieldByType(type, name, _id, value, media))
+          }
+        }
+
+        if (userType == 'employee' && that.state.activeOrder.statuses[that.state.statusIndex - 1].state != 'Filled') {
+          array.push(<button key={'status-submit-button'} className="btn btn-primary" onClick={that.onStatusSubmit()}>Сохранить</button>)
+        }
+        status = array
+        that.setState({ activeStatus: status })
+        return
+      } else {
+        status = <h1 key={that.makeKey()} className="text-center">Необходимо заполнить предыдущий статус, прежде чем заполнять данный</h1>
+        that.setState({ activeStatus: status })
+        return
+      }
+    }
   },
   prepareFieldByType: function (type, name, _id, value, media) {
 
     var cookies = new Cookies()
     var usertype = cookies.get('type')
 
-    
+
 
     if (usertype == "employee") {
       if (this.state.activeOrder.statuses[this.state.statusIndex - 1].state == 'Filled') {
@@ -974,15 +1014,15 @@ var ClientOrderList = createReactClass({
     })
   },
   prepareClientFileField: function (_id, name, media) {
-      var that = this
-      return (
-        <div key={_id} className="form-group">
-          <label>{name}</label>
-          <div className="inline-images">
+    var that = this
+    return (
+      <div key={_id} className="form-group">
+        <label>{name}</label>
+        <div className="inline-images">
           {media.map(function (item, index) { return <div key={that.makeKey()}><br /><a href={item}>{item.replace(/^.*[\\\/]/, '')}</a></div> })}
-          </div>
         </div>
-      )
+      </div>
+    )
   },
   prepareImageMedia: function (media) {
     var array = []
@@ -1226,9 +1266,9 @@ var ClientOrderList = createReactClass({
   },
 
   prepareOrderForEdit: function () {
-    if (this.state.editingOrder != undefined)  {
-      return <EditOrder order={this.state.editingOrder} orderUpdated={this.orderUpdated}/>
-    }    
+    if (this.state.editingOrder != undefined) {
+      return <EditOrder order={this.state.editingOrder} orderUpdated={this.orderUpdated} />
+    }
   },
 
   filterByNumber: function () {
@@ -1240,34 +1280,34 @@ var ClientOrderList = createReactClass({
       var usertype = cookies.get('type')
 
       if (usertype == 'client') {
-        api.searchOrderClient({id: that.state._id, query: that.refs.searchQuery.value}).then(function(response) {
+        api.searchOrderClient({ id: that.state._id, query: that.refs.searchQuery.value }).then(function (response) {
           that.setState({
             orders: response,
             clearbuttonclasses: "btn btn-default"
           })
-        }, function() {
+        }, function () {
 
         })
       } else if (usertype == 'employee') {
-        api.searchOrderEmployee({id: that.state._id, query: that.refs.searchQuery.value}).then(function(response) {
+        api.searchOrderEmployee({ id: that.state._id, query: that.refs.searchQuery.value }).then(function (response) {
           that.setState({
             orders: response,
             clearbuttonclasses: "btn btn-default",
           })
-        }, function() {
+        }, function () {
 
         })
       } else if (usertype == 'admin') {
-        api.searchOrder({query: that.refs.searchQuery.value}).then(function(response) {
+        api.searchOrder({ query: that.refs.searchQuery.value }).then(function (response) {
           that.setState({
             orders: response,
             clearbuttonclasses: "btn btn-default",
           })
-        }, function() {
+        }, function () {
 
         })
       }
-      
+
     }
   },
   restoreOrders: function () {
@@ -1323,7 +1363,7 @@ var ClientOrderList = createReactClass({
     }
   },
 
-  resolveEditOrder: function() {
+  resolveEditOrder: function () {
     var cookies = new Cookies()
     var type = cookies.get('type')
     if (type == 'admin') {
@@ -1331,39 +1371,39 @@ var ClientOrderList = createReactClass({
     }
   },
 
-  handleMailOrderChange: function(e) {
-      this.setState({
-        mailOrder: e.target.value,
-        mailOrderClassValidation: "" 
-      })
+  handleMailOrderChange: function (e) {
+    this.setState({
+      mailOrder: e.target.value,
+      mailOrderClassValidation: ""
+    })
   },
-  mailOrder: function() {
-    
+  mailOrder: function () {
+
   },
-  sendOrderToEmail: function() {
+  sendOrderToEmail: function () {
     var that = this
-    return function() {
+    return function () {
 
       var mailValidation = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-      
+
       if (mailValidation.test(that.state.mailOrder)) {
-        api.sendOrderToEmail({order: that.state.activeOrder, email: that.state.mailOrder}).then(function() {
+        api.sendOrderToEmail({ order: that.state.activeOrder, email: that.state.mailOrder }).then(function () {
           that.showOrderSentAlert()
           $("#editOrderModal").modal('hide');
           that.setState({
             mailOrder: ""
           })
         }, function () {
-  
+
         })
       } else {
         that.setState({
-          mailOrderClassValidation: "has-error" 
+          mailOrderClassValidation: "has-error"
         })
       }
     }
   },
-  showOrderSentAlert: function() {
+  showOrderSentAlert: function () {
     Alert.success('Заказ отправлен', {
       position: 'top',
       effect: 'slide',
@@ -1478,7 +1518,7 @@ var ClientOrderList = createReactClass({
               </div>
               <div className="modal-footer">
                 <div className={this.state.mailOrderClassValidation}>
-                  <input className="form-control pull-left" value={this.state.mailOrder} onChange={this.handleMailOrderChange} style={{width: 200, marginRight: 20}} placeholder={"Укажите адрес почты"}></input>
+                  <input className="form-control pull-left" value={this.state.mailOrder} onChange={this.handleMailOrderChange} style={{ width: 200, marginRight: 20 }} placeholder={"Укажите адрес почты"}></input>
                 </div>
                 <button type="button" className="btn btn-primary pull-left" onClick={this.sendOrderToEmail()}>Отправить</button>
                 <button type="button" className="btn btn-default" data-dismiss="modal">Закрыть</button>
@@ -1583,7 +1623,11 @@ var OrdersRow = createReactClass({
     var cookies = new Cookies()
     var type = cookies.get("type")
     if (type == 'client') {
-      return this.props.item.assignedTo.name
+      if (this.props.item.assignedTo != undefined) {
+        return this.props.item.assignedTo.name
+      } else {
+        return this.props.item.assignedToGroup.name
+      }
     } else {
       return this.props.item.client.name
     }
@@ -1602,14 +1646,14 @@ var OrdersRow = createReactClass({
   resolveChatCounter: function () {
 
   },
-  onEditClick: function() {
+  onEditClick: function () {
     this.props.onRowEditClick(this.props.item)
   },
   resolveEditOrder: function () {
     var cookies = new Cookies()
     var type = cookies.get('type')
     if (type == 'admin' || this.props.permissionToEdit == true) {
-      return (<td><button key={'edit-'+ this.props.item._id +''} type="button" onClick={this.onEditClick} className="btn btn-danger">Редактировать</button></td>)
+      return (<td><button key={'edit-' + this.props.item._id + ''} type="button" onClick={this.onEditClick} className="btn btn-danger">Редактировать</button></td>)
     }
   },
   render: function () {

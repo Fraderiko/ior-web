@@ -7,6 +7,8 @@ var AdminStatusDetails = createReactClass({
     componentDidMount: function () {
         $("#detailsModal").modal('show');
         this.getFields()
+        this.fetchUsers()
+        this.fetchGroups()
     },
     getFields: function () {
         var that = this
@@ -19,6 +21,38 @@ var AdminStatusDetails = createReactClass({
                 suggestions: suggestions,
                 allFields: fields
             })
+            console.log(suggestions)
+        }, function () {
+
+        })
+    },
+    fetchGroups: function () {
+        var that = this
+        api.getEmplGroups().then(function (groups) {
+            var groupSuggestions = []
+            for (var i = 0; i < groups.length; i++) {
+                groupSuggestions.push(groups[i].name)
+            }
+            that.setState({
+                allGroups: groups,
+                groupSuggestions: groupSuggestions
+            })
+        }, function () {
+
+        })
+    },
+    fetchUsers: function () {
+        var that = this
+        api.getUsers().then(function (users) {
+            var employees = users.filter(function (user) { return user.type == "employee" })
+            var userSuggestions = []
+            for (var i = 0; i < employees.length; i++) {
+                userSuggestions.push(employees[i].name)
+            }
+            that.setState({
+                allUsers: employees,
+                userSuggestions: userSuggestions
+            })
         }, function () {
 
         })
@@ -30,7 +64,6 @@ var AdminStatusDetails = createReactClass({
         } else {
             var array = []
             for (var i = 0; i < this.props.fields.length; i++) {
-                console.log(this.props.fields[i])
                 var field = {
                     id: i,
                     text: this.props.fields[i].name
@@ -52,10 +85,44 @@ var AdminStatusDetails = createReactClass({
             var isFinal = this.props.isFinal
         }
 
+        if (this.props.groups_permission_to_edit == undefined) {
+            groups_permission_to_edit = []
+        } else {
+
+            var array = []
+            for (var i = 0; i < this.props.groups_permission_to_edit.length; i++) {
+                var group = {
+                    id: i,
+                    text: this.props.groups_permission_to_edit[i].name
+                }
+                array.push(group)
+            }
+            var groups_permission_to_edit = array
+        }
+
+        if (this.props.users_permission_to_edit == undefined) {
+            users_permission_to_edit = []
+        } else {
+            var array = []
+            for (var i = 0; i < this.props.users_permission_to_edit.length; i++) {
+                var user = {
+                    id: i,
+                    text: this.props.users_permission_to_edit[i].name
+                }
+                array.push(user)
+            }
+            var users_permission_to_edit = array
+
+        }
+
         return {
             name: name,
             fields: fields,
             suggestions: [],
+            userSuggestions: [],
+            groupSuggestions: [],
+            users_permission_to_edit: users_permission_to_edit,
+            groups_permission_to_edit: groups_permission_to_edit,
             validatedNameClassName: "form-group",
             validatedFieldsClassName: "form-group",
             isFinal: isFinal
@@ -71,11 +138,32 @@ var AdminStatusDetails = createReactClass({
             }
         }
 
+        var groups_permission_to_edit = []
+        for (var i = 0; i < this.state.groups_permission_to_edit.length; i++) {
+            for (var j = 0; j < this.state.allGroups.length; j++) {
+                if (this.state.groups_permission_to_edit[i].text == this.state.allGroups[j].name) {
+                    groups_permission_to_edit.push(this.state.allGroups[j]._id)
+                }
+            }
+        }
+
+        var users_permission_to_edit = []
+        for (var i = 0; i < this.state.users_permission_to_edit.length; i++) {
+            for (var j = 0; j < this.state.allGroups.length; j++) {
+                if (this.state.users_permission_to_edit[i].text == this.state.allUsers[j].name) {
+                    users_permission_to_edit.push(this.state.allUsers[j]._id)
+                }
+            }
+        }
+
         var status = {
             name: this.state.name,
             fields: selectedFields,
             _id: this.props._id,
-            isFinal: this.state.isFinal
+            isFinal: this.state.isFinal,
+            groups_permission_to_edit: groups_permission_to_edit,
+            users_permission_to_edit: users_permission_to_edit
+
         }
         console.log(status)
         return status
@@ -142,6 +230,37 @@ var AdminStatusDetails = createReactClass({
         fields.splice(i, 1);
         this.setState({ fields: fields });
     },
+
+    handleGroupDeleteField: function (i) {
+        var groups_permission_to_edit = this.state.groups_permission_to_edit;
+        groups_permission_to_edit.splice(i, 1);
+        this.setState({ groups_permission_to_edit: groups_permission_to_edit });
+    },
+
+    handlUserDeleteField: function(i) {
+        var users_permission_to_edit = this.state.users_permission_to_edit;
+        users_permission_to_edit.splice(i, 1);
+        this.setState({ users_permission_to_edit: users_permission_to_edit });
+    },
+
+    handleGroupAdditionField: function (tag) {
+        var groups_permission_to_edit = this.state.groups_permission_to_edit;
+        groups_permission_to_edit.push({
+            id: groups_permission_to_edit.length + 1,
+            text: tag
+        });
+        this.setState({ groups_permission_to_edit: groups_permission_to_edit });
+    },
+
+    handleUserAdditionField: function (tag) {
+        var users_permission_to_edit = this.state.users_permission_to_edit;
+        users_permission_to_edit.push({
+            id: users_permission_to_edit.length + 1,
+            text: tag
+        });
+        this.setState({ users_permission_to_edit: users_permission_to_edit });
+    },
+
     handleAdditionField: function (tag) {
         var fields = this.state.fields;
         fields.push({
@@ -166,6 +285,14 @@ var AdminStatusDetails = createReactClass({
 
         function prepareTips() {
             return 'Например: ' + that.state.suggestions.join()
+        }
+
+        function prepareGroupTips() {
+            return 'Например: ' + that.state.groupSuggestions.join()
+        }
+
+        function prepareUserTips() {
+            return 'Например: ' + that.state.userSuggestions.join()
         }
 
         return (
@@ -197,6 +324,33 @@ var AdminStatusDetails = createReactClass({
                                         handleChange={this.handleFieldChange} />
                                     <i>{prepareTips()}</i>
                                 </div>
+
+                                <div className={this.state.validatedFieldsClassName}>
+                                    <label>Пользователи с доступом к редактированию</label>
+                                    <ReactTags
+                                        tags={this.state.users_permission_to_edit}
+                                        placeholder={"Начните писать"}
+                                        classNames={{ tagInputField: 'form-control' }}
+                                        suggestions={this.state.userSuggestions}
+                                        handleDelete={this.handlUserDeleteField}
+                                        handleAddition={this.handleUserAdditionField}
+                                        handleChange={this.handleUserFieldChange} />
+                                    <i>{prepareUserTips()}</i>
+                                </div>
+
+                                <div className={this.state.validatedFieldsClassName}>
+                                    <label>Группы с доступом к редактированию</label>
+                                    <ReactTags
+                                        tags={this.state.groups_permission_to_edit}
+                                        placeholder={"Начните писать"}
+                                        classNames={{ tagInputField: 'form-control' }}
+                                        suggestions={this.state.groupSuggestions}
+                                        handleDelete={this.handleGroupDeleteField}
+                                        handleAddition={this.handleGroupAdditionField}
+                                        handleChange={this.handleGroupFieldChange} />
+                                    <i>{prepareGroupTips()}</i>
+                                </div>
+
                                 <div className="checkbox">
                                     <label><input value={this.state.isFinal} onChange={this.handleFinal} checked={this.state.isFinal} type="checkbox"></input>Этот статус завершает заказ</label>
                                 </div>

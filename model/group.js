@@ -7,6 +7,7 @@ var groupSchema = new Schema({
   name: String,
   users: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   canworkwith: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  canworkwithgroups: [{ type: Schema.Types.ObjectId, ref: 'EmployeeGroup' }],
   orders: [{ type: Schema.Types.ObjectId, ref: 'OrderTemplate' }]
 });
 

@@ -14,7 +14,9 @@ var AdminGroupDetails = createReactClass({
             selectedClients: this.prepareSelectedClients(),
             suggestionsClients: this.prepareClientSuggestions(),
             selectedEmployee: this.prepareSelectedEmployee(),
+            selectedEmployeeGroups: this.prepareSelectedEmployeeGroups(),
             suggestionsEmployee: this.prepareEmployeeSuggestions(),
+            suggestionsEmployeeGroups: this.prepareSuggestionsEmployeeGroups(),
             selectedOrders: this.prepareSelectedOrders(),
             suggestionsOrders: this.prepareOrderSuggestions(),
             name: this.props.name,
@@ -72,6 +74,21 @@ var AdminGroupDetails = createReactClass({
             return array
         }
     },
+    prepareSelectedEmployeeGroups: function() {
+        if (this.props.initialSelectedEmployeeGroups == undefined) {
+            return []
+        } else {
+            var array = []
+            for (var i = 0; i < this.props.initialSelectedEmployeeGroups.length; i++) {
+                var empoyee = {
+                    id: i,
+                    text: this.props.initialSelectedEmployeeGroups[i].name
+                }
+                array.push(empoyee)
+            }
+            return array
+        }
+    },
     prepareClientSuggestions: function () {
         if (this.props.clients == undefined) {
             return []
@@ -95,6 +112,19 @@ var AdminGroupDetails = createReactClass({
             }
             return array
         }
+    },
+    prepareSuggestionsEmployeeGroups: function() {
+
+        if (this.props.type == 'client') {
+            var array = []
+            for (var i = 0; i < this.props.egroups.length; i++) {
+                var group = this.props.egroups[i].name
+                array.push(group)
+            }
+            return array
+        }
+
+        
     },
     prepareOrderSuggestions: function () {
         if (this.props.orders == undefined) {
@@ -133,6 +163,21 @@ var AdminGroupDetails = createReactClass({
             text: tag
         });
         this.setState({ selectedClients: selectedClients });
+    },
+
+    handleAdditionEmployeeGroup: function (tag) {
+        var selectedEmployeeGroups = this.state.selectedEmployeeGroups;
+        selectedEmployeeGroups.push({
+            id: selectedEmployeeGroups.length + 1,
+            text: tag
+        });
+        this.setState({ selectedEmployeeGroups: selectedEmployeeGroups });
+    },
+    
+    handleDeleteEmployeeGroup: function (i) {
+        var selectedEmployeeGroups = this.state.selectedEmployeeGroups;
+        selectedEmployeeGroups.splice(i, 1);
+        this.setState({ selectedEmployeeGroups: selectedEmployeeGroups });
     },
 
     handleDeleteEmployee: function (i) {
@@ -224,7 +269,7 @@ var AdminGroupDetails = createReactClass({
             })
         } else {
             if (this.props.type == 'client') {
-                if (this.prepareGroup().canworkwith != this.props.initialSelectedEmployee || this.prepareGroup().users != this.props.initialSelectedClients || this.prepareGroup().name != this.props.name || this.prepareGroup().orders != this.props.group.orders) {
+                if (this.prepareGroup().canworkwithgroups != this.props.initialSelectedEmployeeGroups || this.prepareGroup().canworkwith != this.props.initialSelectedEmployee || this.prepareGroup().users != this.props.initialSelectedClients || this.prepareGroup().name != this.props.name || this.prepareGroup().orders != this.props.group.orders) {
                     api.updateGroup(this.prepareGroup()).then(function () {
                         that.props.finishModal();
                     }, function () {
@@ -323,13 +368,23 @@ var AdminGroupDetails = createReactClass({
                 }
             }
 
+            var canworkwithgroups = []
+            for (var i = 0; i < this.state.selectedEmployeeGroups.length; i++) {
+                for (var j = 0; j < this.props.egroups.length; j++) {
+                    if (this.state.selectedEmployeeGroups[i].text == this.props.egroups[j].name) {
+                        canworkwithgroups.push(this.props.egroups[j]._id)
+                    }
+                }
+            }
+
             var group = {
                 type: this.state.type,
                 name: this.state.name,
                 canworkwith: canworkwith,
                 users: selectedClients,
                 orders: orders,
-                _id: this.props._id
+                _id: this.props._id,
+                canworkwithgroups: canworkwithgroups,
             }
             return group
         }
@@ -348,6 +403,10 @@ var AdminGroupDetails = createReactClass({
 
         function prepareOrdersTips() {
             return 'Например: ' + that.state.suggestionsOrders.join()
+        }
+
+        function prepareEgroupsTips() {
+            return 'Например: ' + that.state.suggestionsEmployeeGroups.join()
         }
 
         var selectedEmployee = this.state.selectedEmployee
@@ -374,6 +433,24 @@ var AdminGroupDetails = createReactClass({
                 return that.handleAdditionClient
             } else {
                 return that.handleAdditionEmployee
+            }
+        }
+
+        function resolveEGroups() {
+            if (that.props.type == "client") {
+                return (
+                    <div className={that.state.validatedSelectedEmployeeClassName}>
+                        <label>Группы исполнителей, которые могут работать с клиентом</label>
+                        <ReactTags tags={that.state.selectedEmployeeGroups}
+                            placeholder={placeholder}
+                            classNames={{ tagInputField: 'form-control' }}
+                            suggestions={that.state.suggestionsEmployeeGroups}
+                            handleDelete={that.handleDeleteEmployeeGroup}
+                            handleAddition={that.handleAdditionEmployeeGroup}
+                            handleChange={that.handleChange} />
+                        <i>{prepareEgroupsTips()}</i>
+                    </div>
+                )
             }
         }
 
@@ -472,6 +549,8 @@ var AdminGroupDetails = createReactClass({
                                         handleChange={that.handleChange} />
                                     <i>{prepareOrdersTips()}</i>
                                 </div>
+
+                                {resolveEGroups()}
 
                             </div>
                             <div className="modal-footer">
