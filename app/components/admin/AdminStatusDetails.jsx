@@ -149,7 +149,7 @@ var AdminStatusDetails = createReactClass({
 
         var users_permission_to_edit = []
         for (var i = 0; i < this.state.users_permission_to_edit.length; i++) {
-            for (var j = 0; j < this.state.allGroups.length; j++) {
+            for (var j = 0; j < this.state.allUsers.length; j++) {
                 if (this.state.users_permission_to_edit[i].text == this.state.allUsers[j].name) {
                     users_permission_to_edit.push(this.state.allUsers[j]._id)
                 }
@@ -201,8 +201,11 @@ var AdminStatusDetails = createReactClass({
             }, function () {
 
             })
-        } else if (this.state.name != this.props.name || this.state.fields != this.props.fields) {
-            api.updateStatus(this.prepareStatus()).then(function () {
+        } else if (this.state.name != this.props.name || this.state.fields != this.props.fields || this.state.groups_permission_to_edit != this.props.groups_permission_to_edit || this.state.users_permission_to_edit != this.props.users_permission_to_edit) {
+
+            var status = this.prepareStatus()
+            
+            api.updateStatus(status).then(function () {
                 that.props.finishModal();
             }, function () {
 
