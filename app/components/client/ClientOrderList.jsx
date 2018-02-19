@@ -667,7 +667,7 @@ var ClientOrderList = createReactClass({
             var media = []
           }
 
-          if (userType == 'employee' && hasPermission == false) {
+          if (userType == 'employee' && hasPermission == false && that.state.activeOrder.statuses[that.state.statusIndex - 1].state != 'Filled') {
             console.log()
             status = <h1 key={that.makeKey()} className="text-center">Нет прав для заполнения статуса</h1>
             that.setState({ activeStatus: status })
