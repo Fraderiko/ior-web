@@ -1344,7 +1344,7 @@ var ClientOrderList = createReactClass({
     var that = this
 
     return function () {
-      api.exportExcel(that.state.orders).then(function (response) {
+      api.exportExcel({orders: that.state.orders, id: that.state._id}).then(function (response) {
         var blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         FileDownload(blob, 'report.xlsx');
       }, function () {
