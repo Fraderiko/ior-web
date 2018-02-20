@@ -123,7 +123,7 @@ app.post('/order/create', function (req, res) {
                                                 from: '"IORcontrol" <support@iorcontrol.ru>', 
                                                 to: result.mail, // 
                                                 subject: 'Новый заказ в IORcontrol',
-                                                html: '<p>Здравствуйте, ' + name + '.</p><p>Для группы ' + group.name + ' был создан: <b>' + req.body.number + '</b>.</p></p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">live.iorcontrol.ru</a></p>'
+                                                html: '<p>Здравствуйте, ' + name + '.</p><p>Для группы ' + group.name + ' был создан новый заказ: <b>' + req.body.number + '</b>.</p></p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://live.iorcontrol.ru">live.iorcontrol.ru</a></p>'
                                             };
                                         
                                             mail_service.sendMail(mailOptions)

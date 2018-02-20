@@ -444,7 +444,8 @@ var ClientOrderList = createReactClass({
         return <div><div className="row"><div className="col-sm-6">{array}</div><div className="col-sm-6">{that.showChat()}</div></div>{that.prepareDiscussion()}</div>
       }
     } else {
-      return this.prepareStatusDetails()
+
+      return this.prepareStatusDetails(this.state.statusIndex || 0)
     }
   },
   prepareDiscussion: function () {
@@ -549,9 +550,12 @@ var ClientOrderList = createReactClass({
 
     var that = this
 
+    console.log(this.state.statusIndex)
+    console.log(this.state.lastStatusIndex)
+
     if (this.state.activeOrder != undefined) {
 
-      if (this.state.activeStatus != undefined) {
+      if (this.state.activeStatus != undefined && this.state.lastStatusIndex == this.state.statusIndex) {
         return (
           <form>
             {this.state.activeStatus}
@@ -670,7 +674,7 @@ var ClientOrderList = createReactClass({
           if (userType == 'employee' && hasPermission == false && that.state.activeOrder.statuses[that.state.statusIndex - 1].state != 'Filled') {
             console.log()
             status = <h1 key={that.makeKey()} className="text-center">Нет прав для заполнения статуса</h1>
-            that.setState({ activeStatus: status })
+            that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
             return
           }
 
@@ -687,11 +691,11 @@ var ClientOrderList = createReactClass({
           array.push(<button key={'status-submit-button'} className="btn btn-primary" onClick={that.onStatusSubmit()}>Сохранить</button>)
         }
         status = array
-        that.setState({ activeStatus: status })
+        that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
         return
       } else {
         status = <h1 key={that.makeKey()} className="text-center">Необходимо заполнить предыдущий статус, прежде чем заполнять данный</h1>
-        that.setState({ activeStatus: status })
+        that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
         return
       }
     }
