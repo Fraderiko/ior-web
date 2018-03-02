@@ -18,6 +18,7 @@ var MailService = require('./mail-service');
 
 var Order = require('./model/order.js');
 var User = require('./model/user');
+var Egroup = require('./model/employee-groups')
 
 app.use(function (req, res, next) {
   console.log('After CORS ' + req.method + ' ' + req.url);
@@ -129,62 +130,128 @@ function processChatMessage(data) {
 
     var userOnline = false
 
-    if (data.username == order.client) {
-      connectedUsers.forEach(function (item, index) {
-        if (item.userID == order.assignedTo) {
-          userOnline = true
+    if (order.assignedToGroup != undefined) {
+      Egroup.findOne({ _id: order.assignedToGroup }).populate('users').exec(function (err, group) { 
+
+        var onlineUsers = [];
+
+        if (data.username == order.client) {
+          connectedUsers.forEach(function (item, index) {
+            group.users.forEach(function (user) {
+              if (item.userID == user._id) {
+                onlineUsers.push(user)
+              }
+            })
+          })
+
+         group.users.forEach(function(userInGroup) {
+
+          if (onlineUsers.includes(userInGroup) == false) {
+            sendNewChatMail(userInGroup, order.number)
+          }
+
+          User.findOne({ _id: userInGroup }, function (err, user) {
+            if (user.push_id != "") {
+              api.postPushWithData(user.push_id, "Новое сообщение по заказу " + order.number, data.order)
+            }
+          })
+
+         })
+        } else {
+          connectedUsers.forEach(function (item, index) {
+            if (item.userID == order.client) {
+              userOnline = true
+            }
+          })
+    
+          if (userOnline == false) {
+            User.findOne({ _id: order.client }, function (err, user) {
+              console.log("OFFLINE, SENDING TO", user)
+              sendNewChatMail(user, order.number)
+            })
+          }
+
+          group.users.forEach(function(userInGroup) {
+
+            if (onlineUsers.includes(userInGroup) == false) {
+              if (userInGroup != data.username) {
+                sendNewChatMail(userInGroup, order.number)
+              }
+            }
+  
+            User.findOne({ _id: userInGroup }, function (err, user) {
+              if (user.push_id != "") {
+                api.postPushWithData(user.push_id, "Новое сообщение по заказу " + order.number, data.order)
+              }
+            })
+  
+           })
+
+          if (order.assignedTo == data.username) {
+            User.findOne({ _id: order.client }, function (err, user) {
+              console.log("user is ", user)
+              if (user.push_id != "") {
+                api.postPushWithData(user.push_id, "Новое сообщение по заказу " + order.number, data.order)
+              }
+            })
+          }
         }
       })
-
-      if (userOnline == false) {
-        User.find({ _id: order.assignedTo }, function (err, user) {
-          sendNewChatMail(user, order.number)
+    } else {
+      if (data.username == order.client) {
+        connectedUsers.forEach(function (item, index) {
+          if (item.userID == order.assignedTo) {
+            userOnline = true
+          }
+        })
+  
+        if (userOnline == false) {
+          User.findOne({ _id: order.assignedTo }, function (err, user) {
+            sendNewChatMail(user, order.number)
+          })
+        }
+      }
+  
+      if (data.username == order.assignedTo) {
+        connectedUsers.forEach(function (item, index) {
+          if (item.userID == order.client) {
+            userOnline = true
+          }
+        })
+  
+        if (userOnline == false) {
+          User.findOne({ _id: order.client }, function (err, user) {
+            sendNewChatMail(user, order.number)
+          })
+        }
+      }
+  
+      if (order.client == data.username) {
+        User.findOne({ _id: order.assignedTo }, function (err, user) {
+          console.log("user is ", user)
+          if (user.push_id != "") {
+            api.postPushWithData(user.push_id, "Новое сообщение по заказу " + order.number, data.order)
+          }
+        })
+      }
+  
+      if (order.assignedTo == data.username) {
+        User.findOne({ _id: order.client }, function (err, user) {
+          console.log("user is ", user)
+          if (user.push_id != "") {
+            api.postPushWithData(user.push_id, "Новое сообщение по заказу " + order.number, data.order)
+          }
         })
       }
     }
-
-    if (data.username == order.assignedTo) {
-      connectedUsers.forEach(function (item, index) {
-        if (item.userID == order.client) {
-          userOnline = true
-        }
-      })
-
-      if (userOnline == false) {
-        User.find({ _id: order.client }, function (err, user) {
-          sendNewChatMail(user, order.number)
-        })
-      }
-    }
-
-    if (order.client == data.username) {
-      User.findOne({ _id: order.assignedTo }, function (err, user) {
-        console.log("user is ", user)
-        if (user.push_id != "") {
-          console.log("Chat message push sent")
-          api.postPushWithData(user.push_id, "Новое сообщение по заказу " + order.number, data.order)
-        }
-      })
-    }
-
-    if (order.assignedTo == data.username) {
-      User.findOne({ _id: order.client }, function (err, user) {
-        console.log("user is ", user)
-        if (user.push_id != "") {
-          console.log("Chat message push sent")
-          api.postPushWithData(user.push_id, "Новое сообщение по заказу " + order.number, data.order)
-        }
-      })
-    }
-
   })
 }
 
 
 function sendNewChatMail(user, order) {
 
-  var mail = user[0].mail
-  var name = user[0].name
+  var mail = user.mail
+  var name = user.name
 
   var mailOptions = {
     from: '"IORcontrol" <support@iorcontrol.ru>',

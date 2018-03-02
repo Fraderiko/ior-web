@@ -7,6 +7,7 @@ import './App.css';
 import VideoLightBox from '../VideoLightBox'
 import BodyEnd from '../BodyEnd'
 import Moment from 'moment'
+import api from '../api/api'
 
 class Message extends React.Component {
 
@@ -17,6 +18,10 @@ class Message extends React.Component {
             lightboxIsOpen: false,
             videoLightboxIsOpen: false
         }
+
+        api.getUser(this.props.user).then((user) => {
+            this.setState({username: user.name})
+        })
     }
 
     onClose() {
@@ -51,6 +56,8 @@ class Message extends React.Component {
             case 'TEXT':
                 return (
                 <li className={`chat ${this.props.user === this.props.message.username ? "right" : "left"}`}>
+                    <b>{this.state.username}</b>
+                    <br/>
                     {this.props.user !== this.props.message.username}
                     {this.props.message.value}
                     <br/>
@@ -60,6 +67,8 @@ class Message extends React.Component {
             case 'IMAGE':
                 return (
                     <li className={`chat ${this.props.user === this.props.message.username ? "right" : "left"}`}>
+                        <b>{this.state.username}</b>
+                        <br/>
                         <img onClick={this.onImageClick.bind(this)} className="cover" src={config.host + this.props.message.value} />
                         <Lightbox isOpen={this.state.lightboxIsOpen} onClose={this.onClose.bind(this)} currentImage={0} images={[{ src: this.props.message.value }]} />
                     </li>
@@ -67,6 +76,8 @@ class Message extends React.Component {
             case 'VIDEO':
                 return (
                     <li className={`chat ${this.props.user === this.props.message.username ? "right" : "left"}`}>
+                        <b>{this.state.username}</b>
+                        <br/>
                         <img onClick={this.onVideoClick.bind(this)} className="cover" src={"./static/play_video.jpg"} />
                         <BodyEnd><VideoLightBox isOpen={this.state.videoLightboxIsOpen} onClose={this.onVideoClose.bind(this)} url={this.props.message.value} /></BodyEnd>
                     </li>
