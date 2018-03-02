@@ -462,7 +462,7 @@ app.post('/order/add-discussion', function (req, res) {
 })
 
 app.get('/order/:number', function(req, res) {
-    Order.findOne({ number: req.params.number }).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'createdBy'}).populate({ path:'client'}).exec(function (err, order) {
+    Order.findOne({ number: req.params.number }).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path: 'assignedToGroup'}).populate({ path:'createdBy'}).populate({ path:'client'}).exec(function (err, order) {
         if (err) throw err;
 
         res.send(order)

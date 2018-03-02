@@ -19,7 +19,7 @@ class Message extends React.Component {
             videoLightboxIsOpen: false
         }
 
-        api.getUser(this.props.user).then((user) => {
+        api.getUser(this.props.message.username).then((user) => {
             this.setState({username: user.name})
         })
     }
@@ -76,7 +76,7 @@ class Message extends React.Component {
             case 'VIDEO':
                 return (
                     <li className={`chat ${this.props.user === this.props.message.username ? "right" : "left"}`}>
-                        <b>{this.state.username}</b>
+                    <b>{this.state.username}</b>
                         <br/>
                         <img onClick={this.onVideoClick.bind(this)} className="cover" src={"./static/play_video.jpg"} />
                         <BodyEnd><VideoLightBox isOpen={this.state.videoLightboxIsOpen} onClose={this.onVideoClose.bind(this)} url={this.props.message.value} /></BodyEnd>
