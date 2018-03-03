@@ -240,7 +240,7 @@ var ClientCreateOrder = createReactClass({
       return undefined
 
     } else {
-      return this.state._id
+      return null
     }
   },
   getStatuses: function () {
