@@ -60,6 +60,7 @@ p {
   clear: both;
   margin: 10px 0;
   max-width: 200px;
+  word-wrap:break-word;
 }
 
 .cover {
