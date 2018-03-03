@@ -112,7 +112,7 @@ app.post('/order/create', function (req, res) {
                                 }
                             })
                         } else {
-                            EmployeeGroup.findOne({_id: req.body.assignedToGroup}).exec(function (err, group) {
+                            EmployeeGroup.findOne({_id: req.body.assignedToGroup}).populate('users').exec(function (err, group) {
 
                                 group.users.forEach(function(user) {
 
