@@ -166,7 +166,6 @@ function processChatMessage(data) {
     
           if (userOnline == false) {
             User.findOne({ _id: order.client }, function (err, user) {
-              console.log("OFFLINE, SENDING TO", user)
               sendNewChatMail(user, order.number)
             })
           }
@@ -174,7 +173,7 @@ function processChatMessage(data) {
           group.users.forEach(function(userInGroup) {
 
             if (onlineUsers.includes(userInGroup) == false) {
-              if (userInGroup != data.username) {
+              if (userInGroup._id != data.username) {
                 sendNewChatMail(userInGroup, order.number)
               }
             }
