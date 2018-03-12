@@ -64,7 +64,7 @@ app.post('/export/', function (req, res) {
     
         if (user.type == 'employee') {
             req.body.orders.forEach(function (item) {
-                worksheet.addRow({Id: item.number, Date: moment.unix(item.date / 1000).locale("ru").format("LLL"), Updated: moment.unix(item.updated / 1000).locale("ru").format("LLL"), Type: item.type.name, Status: item.currentstatus, Client: item.createdBy.name, Info: prepareInfo(item) });
+                worksheet.addRow({Id: item.number, Date: moment.unix(item.date / 1000).locale("ru").format("LLL"), Updated: moment.unix(item.updated / 1000).locale("ru").format("LLL"), Type: item.type.name, Status: item.currentstatus, Client: item.client.name, Info: prepareInfo(item) });
             })
         } else {
             req.body.orders.forEach(function (item) {
