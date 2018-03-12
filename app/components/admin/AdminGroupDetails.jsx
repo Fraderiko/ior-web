@@ -146,7 +146,7 @@ var AdminGroupDetails = createReactClass({
     handleDeleteOrder: function (i) {
         var selectedOrders = this.state.selectedOrders;
         selectedOrders.splice(i, 1);
-        this.setState({ selectedClients: selectedOrders });
+        this.setState({ selectedOrders: selectedOrders });
     },
     handleAdditionOrder: function (tag) {
         var selectedOrders = this.state.selectedOrders;
