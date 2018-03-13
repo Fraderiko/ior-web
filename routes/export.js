@@ -11,7 +11,7 @@ var User = require('../model/user')
 app.use(bodyParser.json());
 
 app.post('/export/', function (req, res) {
-    
+
     var workbook = new Excel.Workbook();
     var sheet = workbook.addWorksheet('Sheet');
     var worksheet = workbook.getWorksheet(1);
@@ -26,7 +26,7 @@ app.post('/export/', function (req, res) {
                 { header: 'Тип', key: 'Type', width: 32, outlineLevel: 1 },
                 { header: 'Статус', key: 'Status', width: 32, outlineLevel: 1 },
                 { header: 'Исполнитель', key: 'Employee', width: 32, outlineLevel: 1 },
-                { header: 'Дополнительная информация', key: 'Info', width: 200, outlineLevel: 1 }          
+                { header: 'Дополнительная информация', key: 'Info', width: 200, outlineLevel: 1 }
             ];
         } else {
             worksheet.columns = [
@@ -36,12 +36,12 @@ app.post('/export/', function (req, res) {
                 { header: 'Тип', key: 'Type', width: 32, outlineLevel: 1 },
                 { header: 'Статус', key: 'Status', width: 32, outlineLevel: 1 },
                 { header: 'Клиент', key: 'Client', width: 32, outlineLevel: 1 },
-                { header: 'Дополнительная информация', key: 'Info', width: 200, outlineLevel: 1 }          
+                { header: 'Дополнительная информация', key: 'Info', width: 200, outlineLevel: 1 }
             ];
         }
-        
-        
-    
+
+
+
         function prepareInfo(item) {
             var string = ""
             for (var i = 0; i < item.statuses.length; i++) {
@@ -51,17 +51,17 @@ app.post('/export/', function (req, res) {
                             var string = string + " | " + item.statuses[i].fields[j].name + " - " + item.statuses[i].fields[j].media.map(function(item) {return config.base_url + item}).join(", ")
                         }
                     } else {
-                        if (item.statuses[i].fields[j].value != "") {
+                        if (item.statuses[i].fields[j].value != "" && item.statuses[i].fields[j].value != undefined) {
                             var string = string + " | " + item.statuses[i].fields[j].name + " - " + item.statuses[i].fields[j].value
                         }
                     }
-                    
+
                 }
             }
-            
+
             return string
         }
-    
+
         if (user.type == 'employee') {
             req.body.orders.forEach(function (item) {
                 worksheet.addRow({Id: item.number, Date: moment.unix(item.date / 1000).locale("ru").format("LLL"), Updated: moment.unix(item.updated / 1000).locale("ru").format("LLL"), Type: item.type.name, Status: item.currentstatus, Client: item.client.name, Info: prepareInfo(item) });
@@ -71,7 +71,7 @@ app.post('/export/', function (req, res) {
                 worksheet.addRow({Id: item.number, Date: moment.unix(item.date / 1000).locale("ru").format("LLL"), Updated: moment.unix(item.updated / 1000).locale("ru").format("LLL"), Type: item.type.name, Status: item.currentstatus, Employee: getEmployee(item), Info: prepareInfo(item) });
             })
         }
-    
+
         function getEmployee(item) {
             if (item.assignedTo == undefined) {
                 return item.assignedToGroup.name
@@ -81,7 +81,7 @@ app.post('/export/', function (req, res) {
         }
 
         var filename = new Date().getTime()
-    
+
         workbook.xlsx.writeFile('./uploads/'+filename+'.xlsx')
         .then(function() {
             res.download('./uploads/'+filename+'.xlsx')
@@ -90,7 +90,7 @@ app.post('/export/', function (req, res) {
 
     })
 
-    
+
 })
 
 module.exports = app;

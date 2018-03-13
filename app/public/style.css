@@ -211,7 +211,7 @@ div.ReactTags__suggestions li mark {
 div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
   background: #b7cfe0;
   cursor: pointer;
-} 
+}
 .center-horizontally {
   margin: 0 auto;
 }
@@ -241,8 +241,8 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 }
 
 .image {
-  width: 150px;
-  height: 150px;
+  width: 700px;
+  height: 700px;
 }
 
 .img {
