@@ -144,6 +144,25 @@ var ClientOrderList = createReactClass({
 
           var sorted = orders.sort(function (a, b) { return b.updated - a.updated })
 
+
+          if (that.state.isFavState) {
+            that.setState({
+              orders: sorted.filter(function (order) { return order.favorites == true }),
+              fetchedOrders: sorted,
+              userHasPermissionToCancel: user.permission_to_cancel_orders,
+              userHasPermissionToEdit: user.permission_to_edit_orders,
+            })
+          } else {
+            that.setState({
+              orders: sorted,
+              fetchedOrders: sorted,
+              userHasPermissionToCancel: user.permission_to_cancel_orders,
+              userHasPermissionToEdit: user.permission_to_edit_orders,
+            })
+          }
+
+          that.subscribeToSocket()
+
           orders.forEach(function(order) {
             order.statuses.forEach(function(status) {
               api.checkIfUserHasPermissionToEditStatus({ groups: status.groups_permission_to_edit, user: that.state._id }).then(function (response) {
@@ -156,25 +175,17 @@ var ClientOrderList = createReactClass({
                   groups_permission_to_edit[status._id] = response.result
                 }
 
+
                 if (that.state.isFavState) {
                   that.setState({
-                    orders: sorted.filter(function (order) { return order.favorites == true }),
-                    fetchedOrders: sorted,
-                    userHasPermissionToCancel: user.permission_to_cancel_orders,
-                    userHasPermissionToEdit: user.permission_to_edit_orders,
                     groups_permission_to_edit: groups_permission_to_edit
                   })
                 } else {
                   that.setState({
-                    orders: sorted,
-                    fetchedOrders: sorted,
-                    userHasPermissionToCancel: user.permission_to_cancel_orders,
-                    userHasPermissionToEdit: user.permission_to_edit_orders,
                     groups_permission_to_edit: groups_permission_to_edit
                   })
                 }
 
-                that.subscribeToSocket()
 
               }, function () {
 
@@ -221,6 +232,7 @@ var ClientOrderList = createReactClass({
       that.state.socket.on(id, function (message) {
 
         that.state.orders.forEach(function (item, index) {
+
           if (item._id == id) {
             var orders = that.state.orders
             var order = orders[index]
