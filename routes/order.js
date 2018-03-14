@@ -3,15 +3,15 @@ var router = express.Router();
 
 var Order = require('../model/order.js');
 var User = require('../model/user.js');
-var EmployeeGroup = require('../model/employee-groups')
-var Group = require('../model/group.js')
+var EmployeeGroup = require('../model/employee-groups');
+var Group = require('../model/group.js');
 var bodyParser = require('body-parser');
 var Moment = require('moment')
 
 var nodemailer = require('nodemailer');
 
 var mail_service = require('../mail-service.js');
-var conf = require('../config')
+var conf = require('../config');
 
 var app = express();
 
@@ -91,11 +91,11 @@ app.post('/order/create', function (req, res) {
                 if (err) throw err;
         
                 User.findOne({_id: req.body.createdBy}, function(err, user) {
-                    if (user.type == 'client') {
+                    if (user.type === 'client') {
 
-                        if (req.body.assignedTo != undefined) {
+                        if (req.body.assignedTo !== undefined) {
                             User.findOne({_id: req.body.assignedTo}, function(err, assigned_to_user) {
-                                if (assigned_to_user.new_orders_notification == true) { 
+                                if (assigned_to_user.new_orders_notification === true) {
                                     var name = assigned_to_user.name
                                     var mailOptions = {
                                         from: '"IORcontrol" <support@iorcontrol.ru>', 
@@ -107,7 +107,7 @@ app.post('/order/create', function (req, res) {
                                     mail_service.sendMail(mailOptions)
                                 }
     
-                                if (assigned_to_user.new_orders_push_notification == true) {
+                                if (assigned_to_user.new_orders_push_notification === true) {
                                     api.postPush(assigned_to_user.push_id, "Для Вас был создан новый заказ")
                                 }
                             })
@@ -117,7 +117,7 @@ app.post('/order/create', function (req, res) {
                                 group.users.forEach(function(user) {
 
                                     User.findOne({_id: user}, function (err, result) {
-                                        if (result.new_orders_notification == true) { 
+                                        if (result.new_orders_notification === true) {
                                             var name = result.name
                                             var mailOptions = {
                                                 from: '"IORcontrol" <support@iorcontrol.ru>', 

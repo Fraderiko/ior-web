@@ -16,59 +16,88 @@ app.post('/export/', function (req, res) {
     var sheet = workbook.addWorksheet('Sheet');
     var worksheet = workbook.getWorksheet(1);
 
+    var state = {}
+
     User.findOne({_id: req.body.id}, function (err, user) {
 
         if (user.type == 'client') {
-            worksheet.columns = [
-                { header: 'Номер', key: 'Id', width: 32 },
-                { header: 'Создан', key: 'Date', width: 32 },
-                { header: 'Обновлен', key: 'Updated', width: 32, outlineLevel: 1 },
-                { header: 'Тип', key: 'Type', width: 32, outlineLevel: 1 },
-                { header: 'Статус', key: 'Status', width: 32, outlineLevel: 1 },
-                { header: 'Исполнитель', key: 'Employee', width: 32, outlineLevel: 1 },
-                { header: 'Дополнительная информация', key: 'Info', width: 200, outlineLevel: 1 }
+            var array = [
+                { header: 'Номер', key: 'Id', width: 22 },
+                { header: 'Создан', key: 'Date', width: 22 },
+                { header: 'Обновлен', key: 'Updated', width: 22, outlineLevel: 1 },
+                { header: 'Тип', key: 'Type', width: 22, outlineLevel: 1 },
+                { header: 'Статус', key: 'Status', width: 22, outlineLevel: 1 },
+                { header: 'Исполнитель', key: 'Employee', width: 22, outlineLevel: 1 },
             ];
         } else {
-            worksheet.columns = [
-                { header: 'Номер', key: 'Id', width: 32 },
-                { header: 'Создан', key: 'Date', width: 32 },
-                { header: 'Обновлен', key: 'Updated', width: 32, outlineLevel: 1 },
-                { header: 'Тип', key: 'Type', width: 32, outlineLevel: 1 },
-                { header: 'Статус', key: 'Status', width: 32, outlineLevel: 1 },
-                { header: 'Клиент', key: 'Client', width: 32, outlineLevel: 1 },
-                { header: 'Дополнительная информация', key: 'Info', width: 200, outlineLevel: 1 }
+            var array = [
+                { header: 'Номер', key: 'Id', width: 22 },
+                { header: 'Создан', key: 'Date', width: 22 },
+                { header: 'Обновлен', key: 'Updated', width: 22, outlineLevel: 1 },
+                { header: 'Тип', key: 'Type', width: 22, outlineLevel: 1 },
+                { header: 'Статус', key: 'Status', width: 22, outlineLevel: 1 },
+                { header: 'Клиент', key: 'Client', width: 22, outlineLevel: 1 },
             ];
         }
 
+        for (var i = 0; i < 40; i++) {
+          array.push({ header: '', key: 'Info-' + i, width: 35, outlineLevel: 1 })
+        }
 
+        worksheet.columns = array
 
         function prepareInfo(item) {
-            var string = ""
+
+            var array = []
+
             for (var i = 0; i < item.statuses.length; i++) {
                 for (var j = 0; j < item.statuses[i].fields.length; j++) {
                     if (item.statuses[i].fields[j].type == 'video' || item.statuses[i].fields[j].type == 'image') {
                         if (item.statuses[i].fields[j].media.length > 0) {
-                            var string = string + " | " + item.statuses[i].fields[j].name + " - " + item.statuses[i].fields[j].media.map(function(item) {return config.base_url + item}).join(", ")
+                          item.statuses[i].fields[j].media.forEach(function (obj, index) {
+                            var url = config.base_url + obj
+                            var index = parseInt(index) + 1
+                            array.push({ formula: "=HYPERLINK(\"" + url + "\", \"" + item.statuses[i].fields[j].name + " (Ссылка-" + index + ") \")" })
+                          })
                         }
                     } else {
                         if (item.statuses[i].fields[j].value != "" && item.statuses[i].fields[j].value != undefined) {
-                            var string = string + " | " + item.statuses[i].fields[j].name + " - " + item.statuses[i].fields[j].value
+                            var string = item.statuses[i].fields[j].name + " - " + item.statuses[i].fields[j].value
+                            array.push(string)
                         }
                     }
 
                 }
             }
 
-            return string
+            return array
         }
 
         if (user.type == 'employee') {
             req.body.orders.forEach(function (item) {
-                worksheet.addRow({Id: item.number, Date: moment.unix(item.date / 1000).locale("ru").format("LLL"), Updated: moment.unix(item.updated / 1000).locale("ru").format("LLL"), Type: item.type.name, Status: item.currentstatus, Client: item.client.name, Info: prepareInfo(item) });
+
+                var row = {Id: item.number, Date: moment.unix(item.date / 1000).locale("ru").format("LLL"), Updated: moment.unix(item.updated / 1000).locale("ru").format("LLL"), Type: item.type.name, Status: item.currentstatus, Client: item.client.name}
+
+                var array = prepareInfo(item)
+
+                array.forEach(function(item, index) {
+                  row["Info-" + index] = item
+                })
+
+                worksheet.addRow(row);
             })
         } else {
             req.body.orders.forEach(function (item) {
-                worksheet.addRow({Id: item.number, Date: moment.unix(item.date / 1000).locale("ru").format("LLL"), Updated: moment.unix(item.updated / 1000).locale("ru").format("LLL"), Type: item.type.name, Status: item.currentstatus, Employee: getEmployee(item), Info: prepareInfo(item) });
+
+                var row = {Id: item.number, Date: moment.unix(item.date / 1000).locale("ru").format("LLL"), Updated: moment.unix(item.updated / 1000).locale("ru").format("LLL"), Type: item.type.name, Status: item.currentstatus, Employee: getEmployee(item) }
+
+                var array = prepareInfo(item)
+
+                array.forEach(function(item, index) {
+                  row["Info-" + index] = item
+                })
+
+                worksheet.addRow(row);
             })
         }
 

@@ -232,7 +232,9 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 }
 
 .image-container {
-  display: inline-block
+  display: inline-block;
+  width: 100px;
+  height: 100px;
 }
 
 .inline-images {
@@ -241,8 +243,8 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 }
 
 .image {
-  width: 700px;
-  height: 700px;
+  width: 150px;
+  height: 150px;
 }
 
 .img {
@@ -705,4 +707,16 @@ footer {
   background: #e4e4e4;
   color: #000000;
   margin: 0 -30px;
+}
+
+#nprogress .bar {
+  background: red;
+
+  position: fixed;
+  z-index: 100031;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 6px;
 }

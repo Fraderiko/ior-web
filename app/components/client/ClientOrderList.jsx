@@ -18,6 +18,9 @@ var { NotificationContainer, NotificationManager } = require('react-notification
 var Discussion = require('../Discussion');
 var config = require('../../../config');
 
+import { loadProgressBar } from 'axios-progress-bar'
+import 'axios-progress-bar/dist/nprogress.css'
+
 
 require('react-s-alert/dist/s-alert-default.css');
 require('react-s-alert/dist/s-alert-css-effects/slide.css');
@@ -26,6 +29,8 @@ require('react-notifications/lib/notifications.css');
 
 var ClientOrderList = createReactClass({
   componentDidMount: function () {
+
+    loadProgressBar()
 
     var that = this
 
@@ -139,23 +144,48 @@ var ClientOrderList = createReactClass({
 
           var sorted = orders.sort(function (a, b) { return b.updated - a.updated })
 
-          if (that.state.isFavState) {
-            that.setState({
-              orders: sorted.filter(function (order) { return order.favorites == true }),
-              fetchedOrders: sorted,
-              userHasPermissionToCancel: user.permission_to_cancel_orders,
-              userHasPermissionToEdit: user.permission_to_edit_orders
-            })
-          } else {
-            that.setState({
-              orders: sorted,
-              fetchedOrders: sorted,
-              userHasPermissionToCancel: user.permission_to_cancel_orders,
-              userHasPermissionToEdit: user.permission_to_edit_orders
-            })
-          }
+          orders.forEach(function(order) {
+            order.statuses.forEach(function(status) {
+              api.checkIfUserHasPermissionToEditStatus({ groups: status.groups_permission_to_edit, user: that.state._id }).then(function (response) {
 
-          that.subscribeToSocket()
+                if (that.state.groups_permission_to_edit == undefined) {
+                  var groups_permission_to_edit = {}
+                  groups_permission_to_edit[status._id] = response.result
+                } else {
+                  var groups_permission_to_edit = that.state.groups_permission_to_edit
+                  groups_permission_to_edit[status._id] = response.result
+                }
+
+                if (that.state.isFavState) {
+                  that.setState({
+                    orders: sorted.filter(function (order) { return order.favorites == true }),
+                    fetchedOrders: sorted,
+                    userHasPermissionToCancel: user.permission_to_cancel_orders,
+                    userHasPermissionToEdit: user.permission_to_edit_orders,
+                    groups_permission_to_edit: groups_permission_to_edit
+                  })
+                } else {
+                  that.setState({
+                    orders: sorted,
+                    fetchedOrders: sorted,
+                    userHasPermissionToCancel: user.permission_to_cancel_orders,
+                    userHasPermissionToEdit: user.permission_to_edit_orders,
+                    groups_permission_to_edit: groups_permission_to_edit
+                  })
+                }
+
+                that.subscribeToSocket()
+
+              }, function () {
+
+              })
+            })
+
+
+
+          })
+
+
 
         }, function () {
 
@@ -554,23 +584,10 @@ var ClientOrderList = createReactClass({
     )
   },
   prepareStatusDetails: function () {
-
     var that = this
 
-    console.log(this.state.statusIndex)
-    console.log(this.state.lastStatusIndex)
-
     if (this.state.activeOrder != undefined) {
-
-      if (this.state.activeStatus != undefined && this.state.lastStatusIndex == this.state.statusIndex) {
-        return (
-          <form>
-            {this.state.activeStatus}
-          </form>
-        )
-      } else {
-        { this.prepareStatusFields() }
-      }
+        return this.prepareStatusFields()
     }
   },
   onStatusSubmit: function () {
@@ -646,25 +663,20 @@ var ClientOrderList = createReactClass({
 
     if (that.state.activeOrder.statuses[that.state.statusIndex - 1].users_permission_to_edit == undefined && this.state.activeOrder.statuses[this.state.statusIndex - 1].groups_permission_to_edit == undefined) {
       hasPermission = true
-      prepareStatus(hasPermission)
-      return
     }
 
-    api.checkIfUserHasPermissionToEditStatus({ groups: this.state.activeOrder.statuses[this.state.statusIndex - 1].groups_permission_to_edit, user: this.state._id }).then(function (response) {
-
-      if (response.result == true || that.state.activeOrder.statuses[that.state.statusIndex - 1].users_permission_to_edit.includes(that.state._id)) {
+    if (this.state.groups_permission_to_edit != undefined) {
+      if (this.state.groups_permission_to_edit[this.state.activeOrder.statuses[that.state.statusIndex - 1]._id] == true) {
         hasPermission = true
-      } else {
-        hasPermission = false;
       }
+    }
 
-      prepareStatus(hasPermission)
 
-    }, function () {
 
-    })
+    if (this.state.activeOrder.statuses[this.state.statusIndex - 1].users_permission_to_edit.includes(that.state._id)) {
+      hasPermission = true
+    }
 
-    function prepareStatus(hasPermission) {
       if (that.state.currentStatusIndex == (that.state.statusIndex - 1) || userType == 'client' || userType == 'admin' || that.state.activeOrder.statuses[that.state.statusIndex - 1].state == 'Filled') {
         var array = []
         for (var i = 0; i < that.state.activeOrder.statuses[that.state.statusIndex - 1].fields.length; i++) {
@@ -679,10 +691,9 @@ var ClientOrderList = createReactClass({
           }
 
           if (userType == 'employee' && hasPermission == false && that.state.activeOrder.statuses[that.state.statusIndex - 1].state != 'Filled') {
-            console.log()
             status = <h1 key={that.makeKey()} className="text-center">Нет прав для заполнения статуса</h1>
-            that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
-            return
+            // that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
+            return status
           }
 
           if (value != undefined) {
@@ -698,21 +709,18 @@ var ClientOrderList = createReactClass({
           array.push(<button key={'status-submit-button'} className="btn btn-primary" onClick={that.onStatusSubmit()}>Сохранить</button>)
         }
         status = array
-        that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
-        return
+        // that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
+        return status
       } else {
         status = <h1 key={that.makeKey()} className="text-center">Необходимо заполнить предыдущий статус, прежде чем заполнять данный</h1>
-        that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
-        return
+        // that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
+        return status
       }
-    }
+    // }
   },
   prepareFieldByType: function (type, name, _id, value, media) {
-
     var cookies = new Cookies()
     var usertype = cookies.get('type')
-
-
 
     if (usertype == "employee") {
       if (this.state.activeOrder.statuses[this.state.statusIndex - 1].state == 'Filled') {
@@ -955,6 +963,7 @@ var ClientOrderList = createReactClass({
   },
   loader: function () {
     if (this.state.isLoading) {
+
       return (
         <div key={'loader'} className="sk-circle">
           <div className="sk-circle1 sk-child"></div>
@@ -1097,6 +1106,8 @@ var ClientOrderList = createReactClass({
           files: []
         }
 
+
+
         that.setState({
           isLoading: true
         })
@@ -1114,6 +1125,9 @@ var ClientOrderList = createReactClass({
             data: data,
             isLoading: false
           })
+
+          that.forceUpdate()
+
         }, function () {
 
         })
@@ -1131,6 +1145,7 @@ var ClientOrderList = createReactClass({
             data: data,
             isLoading: false
           })
+
         }, function () {
 
         })
@@ -1153,6 +1168,7 @@ var ClientOrderList = createReactClass({
     }
 
     function preview() {
+
       if (that.state.data[_id] != undefined) {
         var array = []
         for (var i = 0; i < that.state.data[_id].files.length; i++) {
@@ -1162,6 +1178,7 @@ var ClientOrderList = createReactClass({
         return array
       }
     }
+
     return (
       <div key={_id} className="form-group">
         <label>{name}</label>
