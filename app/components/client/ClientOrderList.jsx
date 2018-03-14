@@ -26,6 +26,13 @@ require('react-notifications/lib/notifications.css');
 
 var ClientOrderList = createReactClass({
   componentDidMount: function () {
+
+    var that = this
+
+    $('#orderModal').on('hidden.bs.modal', function () {
+        that.setState({ activeOrder: undefined })
+    })
+
     this.resolveFavorites()
     var cookies = new Cookies()
     var _id = cookies.get('_id')
