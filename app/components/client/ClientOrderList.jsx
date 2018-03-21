@@ -1041,11 +1041,11 @@ var ClientOrderList = createReactClass({
   prepareClientVideoField: function (_id, name, media) {
     var that = this
     return media.map(function (item, index) {
-      return
+      return <div>
       <div key={_id} className="form-group">
         <label>{name}</label>
        <div key={that.makeKey()} className="video-preview"><br /><Player playsInline={true} fluid={false} src={item} width={410}
-        height={280} /></div>
+        height={280} /></div></div>
       </div>
     })
   },
