@@ -1041,8 +1041,12 @@ var ClientOrderList = createReactClass({
   prepareClientVideoField: function (_id, name, media) {
     var that = this
     return media.map(function (item, index) {
-      return <div key={that.makeKey()} className="video-preview"><br /><Player playsInline={true} fluid={false} src={item} width={410}
+      return
+      <div key={_id} className="form-group">
+        <label>{name}</label>
+       <div key={that.makeKey()} className="video-preview"><br /><Player playsInline={true} fluid={false} src={item} width={410}
         height={280} /></div>
+      </div>
     })
   },
   prepareClientFileField: function (_id, name, media) {
