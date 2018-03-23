@@ -30,6 +30,7 @@ app.post('/users/create', function (req, res) {
         permission_to_cancel_orders: req.body.permission_to_cancel_orders,
         permission_to_edit_orders: req.body.permission_to_edit_orders,
         new_orders_notification: req.body.new_orders_notification,
+        new_chat_notification: req.body.new_chat_notification,
         new_status_notification: req.body.new_status_notification,
         new_orders_push_notification: req.body.new_orders_push_notification,
         new_status_push_notification: req.body.new_status_push_notification,
@@ -41,9 +42,9 @@ app.post('/users/create', function (req, res) {
 
     var mailOptions = {
         from: '"IORcontrol" <support@iorcontrol.ru>',
-        to: req.body.mail, 
-        subject: 'Регистрация в IORcontrol', 
-        html: '<p>Здравствуйте,</p><p>Вы были зарегистрированы в системе IORcontrol.</p><p>Ваш логин: <b>'+ req.body.mail +'</b></p><p>Ваш пароль: <b>'+ req.body.password + '</b></p></p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://online.iorcontrol.ru">live.iorcontrol.ru</a></p>' 
+        to: req.body.mail,
+        subject: 'Регистрация в IORcontrol',
+        html: '<p>Здравствуйте,</p><p>Вы были зарегистрированы в системе IORcontrol.</p><p>Ваш логин: <b>'+ req.body.mail +'</b></p><p>Ваш пароль: <b>'+ req.body.password + '</b></p></p><p>&nbsp;</p><p>С уважением,</p><p>служба технической поддержки.</p><p><a href="http://online.iorcontrol.ru">live.iorcontrol.ru</a></p>'
     };
 
     mail_service.sendMail(mailOptions)
@@ -76,6 +77,7 @@ app.post('/users/update', function (req, res) {
         permission_to_edit_orders: req.body.permission_to_edit_orders,
         new_orders_push_notification: req.body.new_orders_push_notification,
         new_status_push_notification: req.body.new_status_push_notification,
+        new_chat_notification: req.body.new_chat_notification,
         push_id: req.body.push_id } }, function (err, user) {
         if (err) throw err;
 

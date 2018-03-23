@@ -104,20 +104,30 @@ var AdminUserDetails = createReactClass({
         this.props.finishModal();
     },
     prepareUser: function () {
+
+        if (this.props.permission_to_edit_orders == null) {
+          var permission_to_edit_orders = true
+        }
+
+        if (this.props.new_orders_notification == null) {
+
+        }
+
         var user = {
             name: this.state.name,
             mail: this.state.mail,
             phone: this.state.phone || "",
             type: this.state.type,
-            new_orders_notification: true,
-            new_status_notification: true,
+            new_orders_notification: this.props.new_orders_notification || true,
+            new_status_notification: this.props.new_status_notification || true,
+            new_chat_notification: this.props.new_chat_notification || true,
             _id: this.props._id,
             password: this.state.password,
             permission_to_cancel_orders: this.state.permission_to_cancel_orders,
             permission_to_edit_orders: this.state.permission_to_edit_orders,
             push_id: '',
-            new_orders_push_notification: true,
-            new_status_push_notification: true
+            new_orders_push_notification: this.props.new_orders_push_notification || true,
+            new_status_push_notification: this.props.new_status_push_notification || true
         }
         return user
     },

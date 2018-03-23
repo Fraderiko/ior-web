@@ -4,6 +4,7 @@ var api = require('./api/api.jsx');
 var Cookies = require('universal-cookie');
 var { withRouter } = require('react-router-dom');
 var Alert = require('react-s-alert').default;
+var moment = require('moment');
 
 var ClientCreateOrder = createReactClass({
   getInitialState: function () {
@@ -124,7 +125,7 @@ var ClientCreateOrder = createReactClass({
   submitHandler: function (e) {
     // e.preventDefault;
 
-    if (this.state.number == undefined || this.state.number == "" || this.state.ordertype == "" || this.state.assignedTo == "") {
+    if (this.state.ordertype == "" || this.state.assignedTo == "") {
       if (this.state.number == undefined || this.state.number == "") {
         this.setState({
           validatedNameClassName: "has-error form-group"
@@ -162,8 +163,16 @@ var ClientCreateOrder = createReactClass({
     var cookies = new Cookies()
     api.getUserGroup(this.resolveClient()).then(function (group) {
 
+      var number = that.state.number
+
+      if (number == undefined || number == "") {
+        number = moment().format('DDMM') + '-' + that.generateRandomString()
+      } else {
+        number = that.state.number  + '-' + that.generateRandomString()
+      }
+
       var order = {
-        number: that.state.number  + '-' + that.generateRandomString(),
+        number: number,
         date: new Date().getTime(),
         updated: new Date().getTime(),
         type: that.getOrderType(),
@@ -181,7 +190,7 @@ var ClientCreateOrder = createReactClass({
         cancelReason: '',
         messages: [],
       }
-      
+
       api.createOrder(order).then(function (response) {
         if (response.result == "ok") {
           that.props.history.push('/?created=true')
@@ -192,7 +201,7 @@ var ClientCreateOrder = createReactClass({
             timeout: 10000
           });
         }
-        
+
       }, function () {
 
       })
@@ -307,6 +316,7 @@ var ClientCreateOrder = createReactClass({
             <label>Номер заказа</label>
             <input className="form-control" value={this.state.number} onChange={this.handleNumberChange} id="email" placeholder="Укажите номер"></input>
             <i>допустимы только латинские буквы и цифры</i>
+            <br/><i>так же номер может быть пустым, в этом случае он будет присвоен автоматически</i>
           </div>
           <div className={this.state.validatedTypeClassName}>
             <label>Тип заказа</label>

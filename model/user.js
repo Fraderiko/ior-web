@@ -10,6 +10,7 @@ var userSchema = new Schema({
   password: String,
   new_orders_notification: Boolean,
   new_status_notification: Boolean,
+  new_chat_notification: Boolean,
   new_orders_push_notification: Boolean,
   new_status_push_notification: Boolean,
   permission_to_cancel_orders: Boolean,
