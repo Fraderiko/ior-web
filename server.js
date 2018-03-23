@@ -147,7 +147,11 @@ function processChatMessage(data) {
          group.users.forEach(function(userInGroup) {
 
           if (onlineUsers.includes(userInGroup) == false) {
-            sendNewChatMail(userInGroup, order.number)
+            if (user.new_chat_notification != null) {
+              if (user.new_chat_notification == true) {
+                sendNewChatMail(userInGroup, order.number)
+              }
+            }
           }
 
           User.findOne({ _id: userInGroup }, function (err, user) {
@@ -163,10 +167,14 @@ function processChatMessage(data) {
               userOnline = true
             }
           })
-    
+
           if (userOnline == false) {
             User.findOne({ _id: order.client }, function (err, user) {
-              sendNewChatMail(user, order.number)
+              if (user.new_chat_notification != null) {
+                if (user.new_chat_notification == true) {
+                  sendNewChatMail(user, order.number)
+                }
+              }
             })
           }
 
@@ -174,16 +182,20 @@ function processChatMessage(data) {
 
             if (onlineUsers.includes(userInGroup) == false) {
               if (userInGroup._id != data.username) {
-                sendNewChatMail(userInGroup, order.number)
+                if (userInGroup.new_chat_notification != null) {
+                  if (userInGroup.new_chat_notification == true) {
+                    sendNewChatMail(user, order.number)
+                  }
+                }
               }
             }
-  
+
             User.findOne({ _id: userInGroup }, function (err, user) {
               if (user.push_id != "") {
                 api.postPushWithData(user.push_id, "Новое сообщение по заказу " + order.number, data.order)
               }
             })
-  
+
            })
 
           if (order.assignedTo == data.username) {
@@ -203,28 +215,36 @@ function processChatMessage(data) {
             userOnline = true
           }
         })
-  
+
         if (userOnline == false) {
           User.findOne({ _id: order.assignedTo }, function (err, user) {
-            sendNewChatMail(user, order.number)
+            if (user.new_chat_notification != null) {
+              if (user.new_chat_notification == true) {
+                sendNewChatMail(user, order.number)
+              }
+            }
           })
         }
       }
-  
+
       if (data.username == order.assignedTo) {
         connectedUsers.forEach(function (item, index) {
           if (item.userID == order.client) {
             userOnline = true
           }
         })
-  
+
         if (userOnline == false) {
           User.findOne({ _id: order.client }, function (err, user) {
-            sendNewChatMail(user, order.number)
+            if (user.new_chat_notification != null) {
+              if (user.new_chat_notification == true) {
+                sendNewChatMail(user, order.number)
+              }
+            }
           })
         }
       }
-  
+
       if (order.client == data.username) {
         User.findOne({ _id: order.assignedTo }, function (err, user) {
           console.log("user is ", user)
