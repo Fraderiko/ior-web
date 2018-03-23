@@ -130,7 +130,7 @@ var Profile = createReactClass({
             <input className="form-control" value={this.state.phone} onChange={this.handlePhoneChange} id="phone" placeholder="Укажите телефон"></input>
           </div>
           <div key={'shouldShowNewChatAlert'} className="checkbox">
-              <label><input value={this.state.new_chat_notification} onChange={this.handleNewChatNotification} checked={this.state.new_chat_notification} type="checkbox"></input>Присылать почтовые уведомления о новых сообщения в чате</label>
+              <label><input value={this.state.new_chat_notification} onChange={this.handleNewChatNotification} checked={this.state.new_chat_notification} type="checkbox"></input>Присылать почтовые уведомления о новых сообщениях в чате</label>
             </div>
           {this.shouldShowNewOrdersAlert()}
           {this.shouldShowNewStatusesAlert()}
