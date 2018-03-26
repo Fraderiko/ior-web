@@ -174,6 +174,36 @@ app.post('/order/', function (req, res) {
     });
 })
 
+app.post('/order-by-employee/:id/', function (req, res) {
+
+    Order.find({ $and: [ { $or: [ { assignedTo: req.params.id }, { createdBy: req.params.id }] }, { isArchived: false } ]}).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'createdBy', select: "name"}).populate({ path:'client', select: "name"}).populate({ path: 'assignedToGroup'}).exec(function (err, orders) {
+        if (err) throw err;
+
+        EmployeeGroup.find({}, function (err, result) {
+
+            var array = []
+
+            result.forEach(function(item) {
+                item.users.forEach(function (i) {
+                    if (i == req.params.id) {
+                        array.push(item._id)
+                    }
+                })
+            })
+
+            Order.find({ $and: [{ assignedToGroup: { $in: array }}, { isArchived: false } ]}).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'createdBy', select: "name"}).populate({ path:'client', select: "name"}).populate({ path: 'assignedToGroup'}).exec(function (err, ordersWithGroup) {
+                if (err) throw err;
+
+                var result = orders.concat(ordersWithGroup)
+
+                res.send(result)
+
+            });
+        })
+
+    });
+})
+
 app.post('/order-by-employee/:id/:page', function (req, res) {
 
   var pageOptions = {
@@ -234,6 +264,17 @@ app.post('/order-search/', function (req, res) {
     Order.find({ number : {$regex : ".*"+req.body.query+".*"}}).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'createdBy', select: "name"}).populate({ path:'client', select: "name"}).exec(function (err, orders) {
         if (err) throw err;
         res.send(orders)
+    });
+})
+
+app.post('/order-by-group/:id/', function (req, res) {
+    Group.findOne({users: req.params.id}, function(err, group) {
+        if (group != null) {
+            Order.find( { $and: [{ group: group._id }, { isArchived: false }] }).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'assignedToGroup' }).populate({ path:'createdBy'}).populate({ path:'client'}).exec(function (err, orders) {
+                if (err) throw err;
+                res.send(orders)
+            });
+        }
     });
 })
 
