@@ -72,9 +72,7 @@ var ClientOrderList = createReactClass({
     var _id = cookies.get('_id')
 
     var socket = Socket(config.base_url + ':3001/')
-    // socket.on('connect', function() {
     socket.emit("_id", _id)
-    // })
 
     return {
       orders: [],
@@ -87,14 +85,16 @@ var ClientOrderList = createReactClass({
       lightboxIsOpen: false,
       socket: socket,
       messages: [],
-      mailOrderClassValidation: ""
+      mailOrderClassValidation: "",
+      startingOrdersPage: 0
     }
   },
   fetchOrders: function () {
+
     var that = this
     var cookies = new Cookies()
     if (cookies.get('type') == 'client') {
-      api.getOrdersByUser(cookies.get('_id')).then(function (orders) {
+      api.getOrdersByUser(cookies.get('_id'), this.state.startingOrdersPage).then(function (orders) {
         api.getUser(that.state._id).then(function (user) {
 
           for (var i = 0; i < user.favorites.length; i++) {
@@ -109,19 +109,21 @@ var ClientOrderList = createReactClass({
 
           if (that.state.isFavState) {
             that.setState({
-              orders: sorted.filter(function (order) { return order.favorites == true }),
-              fetchedOrders: sorted,
-              userHasPermissionToEdit: user.permission_to_edit_orders
+              orders: that.state.orders.concat(sorted.filter(function (order) { return order.favorites == true })),
+              fetchedOrders: that.state.orders.concat(sorted),
+              userHasPermissionToEdit: user.permission_to_edit_orders,
+              startingOrdersPage:that.state.startingOrdersPage + 1
             })
           } else {
             that.setState({
-              orders: sorted,
-              fetchedOrders: sorted,
-              userHasPermissionToEdit: user.permission_to_edit_orders
+              orders: that.state.orders.concat(sorted),
+              fetchedOrders: that.state.orders.concat(sorted),
+              userHasPermissionToEdit: user.permission_to_edit_orders,
+              startingOrdersPage:that.state.startingOrdersPage + 1
             })
           }
 
-          that.subscribeToSocket()
+          that.subscribeToSocket(orders)
 
         }, function () {
 
@@ -131,7 +133,7 @@ var ClientOrderList = createReactClass({
 
       })
     } else if (cookies.get('type') == 'employee') {
-      api.getOrdersByEmployeeId(cookies.get('_id')).then(function (orders) {
+      api.getOrdersByEmployeeId(cookies.get('_id'), that.state.startingOrdersPage).then(function (orders) {
         api.getUser(that.state._id).then(function (user) {
 
           for (var i = 0; i < user.favorites.length; i++) {
@@ -147,21 +149,23 @@ var ClientOrderList = createReactClass({
 
           if (that.state.isFavState) {
             that.setState({
-              orders: sorted.filter(function (order) { return order.favorites == true }),
-              fetchedOrders: sorted,
+              orders: that.state.orders.concat(sorted.filter(function (order) { return order.favorites == true })),
+              fetchedOrders: that.state.orders.concat(sorted),
               userHasPermissionToCancel: user.permission_to_cancel_orders,
               userHasPermissionToEdit: user.permission_to_edit_orders,
+              startingOrdersPage: that.state.startingOrdersPage + 1
             })
           } else {
             that.setState({
-              orders: sorted,
-              fetchedOrders: sorted,
+              orders: that.state.orders.concat(sorted),
+              fetchedOrders: that.state.orders.concat(sorted),
               userHasPermissionToCancel: user.permission_to_cancel_orders,
               userHasPermissionToEdit: user.permission_to_edit_orders,
+              startingOrdersPage: that.state.startingOrdersPage + 1
             })
           }
 
-          that.subscribeToSocket()
+          that.subscribeToSocket(orders)
 
           orders.forEach(function(order) {
             order.statuses.forEach(function(status) {
@@ -207,8 +211,9 @@ var ClientOrderList = createReactClass({
     } else if ((cookies.get('type') == 'admin')) {
       api.getOrders().then(function (orders) {
         that.setState({
-          orders: orders.sort(function (a, b) { return b.updated - a.updated }),
-          fetchedOrders: orders.sort(function (a, b) { return b.updated - a.updated })
+          orders: that.state.orders.concat(orders.sort(function (a, b) { return b.updated - a.updated })),
+          fetchedOrders: that.state.orders.concat(orders.sort(function (a, b) { return b.updated - a.updated })),
+          startingOrdersPage: that.state.startingOrdersPage + 1
         })
       }, function () {
 
@@ -225,9 +230,9 @@ var ClientOrderList = createReactClass({
 
     return text;
   },
-  subscribeToSocket: function () {
+  subscribeToSocket: function (orders) {
     var that = this
-    this.state.orders.forEach(function (order) {
+    orders.forEach(function (order) {
       var id = order._id
       that.state.socket.on(id, function (message) {
 
@@ -1487,6 +1492,7 @@ var ClientOrderList = createReactClass({
               </thead>
               <tbody>
                 {this.prepareRows()}
+              <tr><td colSpan="9"><button onClick={() => this.fetchOrders()} className="btn btn-success">Показать еще</button></td></tr>
               </tbody>
             </table>
           </div>

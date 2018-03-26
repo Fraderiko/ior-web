@@ -2,7 +2,7 @@ var axios = require('axios');
 var config = require('../../../../config.js');
 
 module.exports = {
-    
+
     checkIfUserHasPermissionToEditStatus: function(object) {
         return axios.post(config.host + '/egroup-user/', object).then(function (res) {
             return res.data;
@@ -44,8 +44,8 @@ module.exports = {
             console.log(res);
         });
     },
-    getOrdersByEmployeeId: function(id) {
-        return axios.post(config.host + '/order-by-employee/'+id).then(function (res) {
+    getOrdersByEmployeeId: function(id, page) {
+        return axios.post(config.host + '/order-by-employee/'+id +'/' + page ).then(function (res) {
             return res.data;
         }, function(res) {
             console.log("ERROR!");
@@ -68,8 +68,8 @@ module.exports = {
             console.log(res);
         });
     },
-    getOrdersByUser: function(id) {
-        return axios.post(config.host + '/order-by-group/'+id+'').then(function (res) {
+    getOrdersByUser: function(id, page) {
+        return axios.post(config.host + '/order-by-group/'+id+'/'+page+'').then(function (res) {
             return res.data;
         }, function(res) {
             console.log("ERROR!");
