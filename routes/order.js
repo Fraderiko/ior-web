@@ -211,7 +211,7 @@ app.post('/order-by-employee/:id/:page', function (req, res) {
       limit: req.params.limit || 10
   }
 
-    Order.find({ $and: [ { $or: [ { assignedTo: req.params.id }, { createdBy: req.params.id }] }, { isArchived: false } ]}).skip(pageOptions.page*pageOptions.limit).limit(pageOptions.limit).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'createdBy', select: "name"}).populate({ path:'client', select: "name"}).populate({ path: 'assignedToGroup'}).exec(function (err, orders) {
+    Order.find({ $and: [ { $or: [ { assignedTo: req.params.id }, { createdBy: req.params.id }] }, { isArchived: false } ]}).sort({updated: -1}).skip(pageOptions.page*pageOptions.limit).limit(pageOptions.limit).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'createdBy', select: "name"}).populate({ path:'client', select: "name"}).populate({ path: 'assignedToGroup'}).exec(function (err, orders) {
         if (err) throw err;
 
         EmployeeGroup.find({}, function (err, result) {
@@ -287,7 +287,7 @@ app.post('/order-by-group/:id/:page', function (req, res) {
 
     Group.findOne({users: req.params.id}, function(err, group) {
         if (group != null) {
-            Order.find( { $and: [{ group: group._id }, { isArchived: false }] }).skip(pageOptions.page*pageOptions.limit).limit(pageOptions.limit).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'assignedToGroup' }).populate({ path:'createdBy'}).populate({ path:'client'}).exec(function (err, orders) {
+            Order.find( { $and: [{ group: group._id }, { isArchived: false }] }).sort({updated: -1}).skip(pageOptions.page*pageOptions.limit).limit(pageOptions.limit).populate({ path:'type', select: 'name -_id'}).populate({ path:'assignedTo', select: "name"}).populate({ path:'assignedToGroup' }).populate({ path:'createdBy'}).populate({ path:'client'}).exec(function (err, orders) {
                 if (err) throw err;
                 res.send(orders)
             });
