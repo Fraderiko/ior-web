@@ -89,7 +89,11 @@ var ClientOrderList = createReactClass({
       startingOrdersPage: 0
     }
   },
-  fetchOrders: function () {
+  fetchOrders: function (withInitialReload) {
+
+    if (withInitialReload) {
+      this.setState({ startingOrdersPage: 0, orders: [], fetchedOrders: [] })
+    }
 
     var that = this
     var cookies = new Cookies()
@@ -646,11 +650,11 @@ var ClientOrderList = createReactClass({
 
         if (response.status == "ok") {
           $("#orderModal").modal('hide');
-          that.fetchOrders()
+          that.fetchOrders(true)
           Alert.success('Заказ обновлен', {
             position: 'top',
             effect: 'slide',
-            timeout: 3000
+            timeout: 3000,
           });
 
         }
