@@ -646,13 +646,13 @@ var ClientOrderList = createReactClass({
 
         if (response.status == "ok") {
           $("#orderModal").modal('hide');
+          window.location.reload()
           that.fetchOrders()
           Alert.success('Заказ обновлен', {
             position: 'top',
             effect: 'slide',
             timeout: 3000
           });
-
         }
       }, function () {
 
