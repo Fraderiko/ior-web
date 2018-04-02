@@ -89,7 +89,13 @@ var ClientOrderList = createReactClass({
       startingOrdersPage: 0
     }
   },
-  fetchOrders: function () {
+  fetchOrders: function (withInitialReload) {
+
+    this.unsubscribeFromSocket()
+
+    if (withInitialReload) {
+      this.setState({ startingOrdersPage: 0, orders: [], fetchedOrders: [] })
+    }
 
     var that = this
     var cookies = new Cookies()
@@ -124,13 +130,9 @@ var ClientOrderList = createReactClass({
           }
 
           that.subscribeToSocket(orders)
-
         }, function () {
-
         })
-
       }, function () {
-
       })
     } else if (cookies.get('type') == 'employee') {
       api.getOrdersByEmployeeId(cookies.get('_id'), that.state.startingOrdersPage).then(function (orders) {
@@ -145,7 +147,6 @@ var ClientOrderList = createReactClass({
           }
 
           var sorted = orders.sort(function (a, b) { return b.updated - a.updated })
-
 
           if (that.state.isFavState) {
             that.setState({
@@ -189,24 +190,13 @@ var ClientOrderList = createReactClass({
                     groups_permission_to_edit: groups_permission_to_edit
                   })
                 }
-
-
               }, function () {
-
               })
             })
-
-
-
           })
-
-
-
         }, function () {
-
         })
       }, function () {
-
       })
     } else if ((cookies.get('type') == 'admin')) {
       api.getOrders().then(function (orders) {
@@ -230,6 +220,15 @@ var ClientOrderList = createReactClass({
 
     return text;
   },
+
+  unsubscribeFromSocket: function () {
+    var orders = this.state.subscribedOrders || []
+
+    orders.forEach(function (order) {
+      this.state.socket.removeListener(order)
+    })
+  },
+
   subscribeToSocket: function (orders) {
     var that = this
     orders.forEach(function (order) {
@@ -249,7 +248,8 @@ var ClientOrderList = createReactClass({
 
             that.setState({
               orders: orders,
-              type: type
+              type: type,
+              subscribedOrders: orders.map(function(order) { return order._id })
             })
 
             if (message.username != that.state._id) {
@@ -261,11 +261,12 @@ var ClientOrderList = createReactClass({
                     break
                   }
                 }
+
                 that.setState({
                   statusIndex: 0,
                   activeOrder: order,
                   messagesOrder: order._id,
-                  currentStatusIndex: currentStatusIndex
+                  currentStatusIndex: currentStatusIndex,
                 })
               });
             }
@@ -296,8 +297,9 @@ var ClientOrderList = createReactClass({
     return decodeURIComponent(results[2].replace(/\+/g, " "));
   },
   componentWillReceiveProps: function (nextProps) {
+
     this.resolveFavorites()
-    this.fetchOrders()
+    this.setState({ startingOrdersPage: 0, orders: [], fetchedOrders: [] }, this.fetchOrders)
   },
   resolveFavorites: function () {
     if (this.checkGETParams("favorites") === null) {
@@ -646,8 +648,7 @@ var ClientOrderList = createReactClass({
 
         if (response.status == "ok") {
           $("#orderModal").modal('hide');
-          window.location.reload()
-          that.fetchOrders()
+          that.fetchOrders(true)
           Alert.success('Заказ обновлен', {
             position: 'top',
             effect: 'slide',
