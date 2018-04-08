@@ -35,7 +35,7 @@ var ClientOrderList = createReactClass({
     var that = this
 
     $('#orderModal').on('hidden.bs.modal', function () {
-        that.setState({ activeOrder: undefined })
+      that.setState({ activeOrder: undefined })
     })
 
     this.resolveFavorites()
@@ -91,11 +91,19 @@ var ClientOrderList = createReactClass({
   },
   fetchOrders: function (withInitialReload) {
 
-    this.unsubscribeFromSocket()
+    var that = this
+
+    if (this.state.socket) {
+      var orders = this.state.subscribedOrders || []
+      orders.forEach(function (order) {
+        that.state.socket.removeListener(order)
+      })
+    }
 
     if (withInitialReload) {
       this.setState({ startingOrdersPage: 0, orders: [], fetchedOrders: [] })
     }
+
 
     var that = this
     var cookies = new Cookies()
@@ -118,14 +126,14 @@ var ClientOrderList = createReactClass({
               orders: that.state.orders.concat(sorted.filter(function (order) { return order.favorites == true })),
               fetchedOrders: that.state.orders.concat(sorted),
               userHasPermissionToEdit: user.permission_to_edit_orders,
-              startingOrdersPage:that.state.startingOrdersPage + 1
+              startingOrdersPage: that.state.startingOrdersPage + 1
             })
           } else {
             that.setState({
               orders: that.state.orders.concat(sorted),
               fetchedOrders: that.state.orders.concat(sorted),
               userHasPermissionToEdit: user.permission_to_edit_orders,
-              startingOrdersPage:that.state.startingOrdersPage + 1
+              startingOrdersPage: that.state.startingOrdersPage + 1
             })
           }
 
@@ -168,8 +176,8 @@ var ClientOrderList = createReactClass({
 
           that.subscribeToSocket(orders)
 
-          orders.forEach(function(order) {
-            order.statuses.forEach(function(status) {
+          orders.forEach(function (order) {
+            order.statuses.forEach(function (status) {
               api.checkIfUserHasPermissionToEditStatus({ groups: status.groups_permission_to_edit, user: that.state._id }).then(function (response) {
 
                 if (that.state.groups_permission_to_edit == undefined) {
@@ -231,9 +239,15 @@ var ClientOrderList = createReactClass({
 
   subscribeToSocket: function (orders) {
     var that = this
+
+    that.setState({
+      subscribedOrders: orders.map(function (order) { return order._id })
+    })
+
     orders.forEach(function (order) {
       var id = order._id
       that.state.socket.on(id, function (message) {
+
 
         that.state.orders.forEach(function (item, index) {
 
@@ -249,7 +263,6 @@ var ClientOrderList = createReactClass({
             that.setState({
               orders: orders,
               type: type,
-              subscribedOrders: orders.map(function(order) { return order._id })
             })
 
             if (message.username != that.state._id) {
@@ -606,7 +619,7 @@ var ClientOrderList = createReactClass({
     var that = this
 
     if (this.state.activeOrder != undefined) {
-        return this.prepareStatusFields()
+      return this.prepareStatusFields()
     }
   },
   onStatusSubmit: function () {
@@ -662,7 +675,7 @@ var ClientOrderList = createReactClass({
   },
   orderUpdated: function () {
     $("#editOrderModal").modal('hide');
-    this.fetchOrders()
+    this.fetchOrders(true)
     Alert.success('Заказ обновлен', {
       position: 'top',
       effect: 'slide',
@@ -695,45 +708,45 @@ var ClientOrderList = createReactClass({
       hasPermission = true
     }
 
-      if (that.state.currentStatusIndex == (that.state.statusIndex - 1) || userType == 'client' || userType == 'admin' || that.state.activeOrder.statuses[that.state.statusIndex - 1].state == 'Filled') {
-        var array = []
-        for (var i = 0; i < that.state.activeOrder.statuses[that.state.statusIndex - 1].fields.length; i++) {
-          var name = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].name
-          var _id = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i]._id
-          var type = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].type
-          var value = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].value
-          if (that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].media != undefined) {
-            var media = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].media
-          } else {
-            var media = []
-          }
-
-          if (userType == 'employee' && hasPermission == false && that.state.activeOrder.statuses[that.state.statusIndex - 1].state != 'Filled') {
-            status = <h1 key={that.makeKey()} className="text-center">Нет прав для заполнения статуса</h1>
-            // that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
-            return status
-          }
-
-          if (value != undefined) {
-            array.push(that.prepareFieldByType(type, name, _id, value, media))
-          } else if (media.length > 0) {
-            array.push(that.prepareFieldByType(type, name, _id, value, media))
-          } else if (value == undefined && type == 'employee') {
-            array.push(that.prepareFieldByType(type, name, _id, value, media))
-          }
+    if (that.state.currentStatusIndex == (that.state.statusIndex - 1) || userType == 'client' || userType == 'admin' || that.state.activeOrder.statuses[that.state.statusIndex - 1].state == 'Filled') {
+      var array = []
+      for (var i = 0; i < that.state.activeOrder.statuses[that.state.statusIndex - 1].fields.length; i++) {
+        var name = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].name
+        var _id = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i]._id
+        var type = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].type
+        var value = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].value
+        if (that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].media != undefined) {
+          var media = that.state.activeOrder.statuses[that.state.statusIndex - 1].fields[i].media
+        } else {
+          var media = []
         }
 
-        if (userType == 'employee' && that.state.activeOrder.statuses[that.state.statusIndex - 1].state != 'Filled') {
-          array.push(<button key={'status-submit-button'} className="btn btn-primary" onClick={that.onStatusSubmit()}>Сохранить</button>)
+        if (userType == 'employee' && hasPermission == false && that.state.activeOrder.statuses[that.state.statusIndex - 1].state != 'Filled') {
+          status = <h1 key={that.makeKey()} className="text-center">Нет прав для заполнения статуса</h1>
+          // that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
+          return status
         }
-        status = array
-        // that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
-        return status
-      } else {
-        status = <h1 key={that.makeKey()} className="text-center">Необходимо заполнить предыдущий статус, прежде чем заполнять данный</h1>
-        // that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
-        return status
+
+        if (value != undefined) {
+          array.push(that.prepareFieldByType(type, name, _id, value, media))
+        } else if (media.length > 0) {
+          array.push(that.prepareFieldByType(type, name, _id, value, media))
+        } else if (value == undefined && type == 'employee') {
+          array.push(that.prepareFieldByType(type, name, _id, value, media))
+        }
       }
+
+      if (userType == 'employee' && that.state.activeOrder.statuses[that.state.statusIndex - 1].state != 'Filled') {
+        array.push(<button key={'status-submit-button'} className="btn btn-primary" onClick={that.onStatusSubmit()}>Сохранить</button>)
+      }
+      status = array
+      // that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
+      return status
+    } else {
+      status = <h1 key={that.makeKey()} className="text-center">Необходимо заполнить предыдущий статус, прежде чем заполнять данный</h1>
+      // that.setState({ activeStatus: status, lastStatusIndex: that.state.statusIndex })
+      return status
+    }
     // }
   },
   prepareFieldByType: function (type, name, _id, value, media) {
@@ -1048,10 +1061,10 @@ var ClientOrderList = createReactClass({
     var that = this
     return media.map(function (item, index) {
       return <div>
-      <div key={_id} className="form-group">
-        <label>{name}</label>
-       <div key={that.makeKey()} className="video-preview"><br /><Player playsInline={true} fluid={false} src={item} width={410}
-        height={280} /></div></div>
+        <div key={_id} className="form-group">
+          <label>{name}</label>
+          <div key={that.makeKey()} className="video-preview"><br /><Player playsInline={true} fluid={false} src={item} width={410}
+            height={280} /></div></div>
       </div>
     })
   },
@@ -1390,7 +1403,7 @@ var ClientOrderList = createReactClass({
     var that = this
 
     return function () {
-      api.exportExcel({orders: that.state.orders, id: that.state._id}).then(function (response) {
+      api.exportExcel({ orders: that.state.orders, id: that.state._id }).then(function (response) {
         var blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
         FileDownload(blob, 'report.xlsx');
       }, function () {
@@ -1493,7 +1506,7 @@ var ClientOrderList = createReactClass({
               </thead>
               <tbody>
                 {this.prepareRows()}
-              <tr><td colSpan="9"><button onClick={() => this.fetchOrders()} className="btn btn-success">Показать еще</button></td></tr>
+                <tr><td colSpan="9"><button onClick={() => this.fetchOrders()} className="btn btn-success">Показать еще</button></td></tr>
               </tbody>
             </table>
           </div>
